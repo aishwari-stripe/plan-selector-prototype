@@ -224,6 +224,32 @@
     .compare-btn-primary { background: #635bff; color: #fff; border: none; }
     .compare-btn-primary:hover { background: #5851db; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(99,91,255,0.3); }
     .compare-check { width: 22px; height: 22px; border-radius: 50%; background: #ede9fe; color: #635bff; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+    /* Split illustration panel */
+    .split-illust-panel { flex: 1; background: #f0f0f5; display: flex; align-items: flex-end; justify-content: center; position: relative; overflow: hidden; padding: 40px; }
+    .split-illust-orb { position: absolute; border-radius: 50%; background: rgba(99,91,255,0.08); }
+    .split-illust-orb-1 { width: 200px; height: 200px; bottom: -20%; left: -10%; }
+    .split-illust-orb-2 { width: 160px; height: 160px; bottom: -10%; right: -5%; }
+    .split-illust-scene { position: relative; text-align: center; }
+    .split-illust-shield { width: 100px; height: 116px; margin: 0 auto; position: relative; display: flex; align-items: center; justify-content: center; }
+    .split-illust-shield::before { content: ''; position: absolute; inset: 0; clip-path: polygon(50% 0%, 100% 15%, 100% 70%, 50% 100%, 0% 70%, 0% 15%); border: 3px solid #635bff; background: transparent; }
+    .split-illust-shield-inner { position: absolute; inset: 4px; clip-path: polygon(50% 0%, 100% 15%, 100% 70%, 50% 100%, 0% 70%, 0% 15%); background: rgba(99,91,255,0.04); }
+    .split-illust-shield-check { position: relative; z-index: 1; font-size: 28px; color: #1a1a2e; }
+    .split-illust-caption { margin-top: 16px; font-size: 13px; color: #697386; font-weight: 500; }
+
+    /* Split plan option cards */
+    .split-plan-option { border: 1.5px solid #e3e8ee; border-radius: 12px; padding: 16px 18px; cursor: pointer; transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+    .split-plan-option:hover { border-color: #c1c9d2; }
+    .split-plan-option.selected { border-color: #635bff; background: #fff; box-shadow: 0 0 0 1.5px #635bff; }
+    .split-plan-option-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .split-plan-option-name { font-size: 15px; font-weight: 600; color: #1a1a2e; }
+    .split-plan-option-price { font-size: 12px; color: #697386; margin-top: 1px; }
+    .split-plan-radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #d1d5db; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
+    .split-plan-option.selected .split-plan-radio { border-color: #635bff; }
+    .split-plan-option.selected .split-plan-radio::after { content: ''; width: 9px; height: 9px; border-radius: 50%; background: #635bff; }
+    .split-plan-benefits { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+    .split-plan-benefits li { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #425466; }
+    .split-plan-benefits .chk { color: #635bff; font-weight: 700; font-size: 13px; }
+
     .compare-row-footer { border-top: 1px solid #e3e8ee; border-bottom: none; }
     .compare-row-footer .compare-cell { padding: 18px; }
     .compare-dash { color: #c1c9d2; font-size: 16px; }
@@ -362,6 +388,10 @@
     <div class="control-option" onclick="switchFlow('modal-stacked')">
       <div class="control-option-name">Stacked selection</div>
       <div class="control-option-desc">Radio-style vertical cards in modal</div>
+    </div>
+    <div class="control-option" onclick="switchFlow('modal-split')">
+      <div class="control-option-name">Split with illustration</div>
+      <div class="control-option-desc">Cards left, illustration right in modal</div>
     </div>
   </div>
 
@@ -663,44 +693,34 @@
         </div>
       </div>
 
-      <!-- SCREEN: Full Page — Split illustration -->
+      <!-- SCREEN: Full Page — Split illustration (content left, illustration right) -->
       <div class="screen screen-plan-full" id="screenFullSplit" style="flex-direction: row; padding: 0;">
-        <div style="flex: 1; background: linear-gradient(135deg, #f8f6ff, #ede9fe); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
-          <div style="position: absolute; width: 200px; height: 200px; background: rgba(99,91,255,0.08); border-radius: 50%; top: 15%; right: -10%;"></div>
-          <div style="position: absolute; width: 150px; height: 150px; background: rgba(139,92,246,0.06); border-radius: 50%; bottom: 20%; left: -5%;"></div>
-          <div style="position: relative; text-align: center;">
-            <div style="width: 120px; height: 140px; margin: 0 auto; position: relative;">
-              <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #635bff, #8b5cf6); clip-path: polygon(50% 0%, 100% 15%, 100% 70%, 50% 100%, 0% 70%, 0% 15%); display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 16px 48px rgba(99,91,255,0.25);"><div style="position: absolute; inset: 4px; background: linear-gradient(135deg, #ede9fe, #f8f6ff); clip-path: polygon(50% 0%, 100% 15%, 100% 70%, 50% 100%, 0% 70%, 0% 15%);"></div><span style="position: relative; font-size: 32px; z-index: 1;">&#10003;</span></div>
-            </div>
-            <p style="margin-top: 20px; font-size: 14px; color: #697386; font-weight: 500;">Protection for your business</p>
-          </div>
-        </div>
-        <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px; background: #fff;">
-          <div style="max-width: 380px; width: 100%; animation: fadeInUp 0.4s ease;">
-            <div style="display: flex; gap: 6px; margin-bottom: 24px;">
+        <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 48px; background: #fff;">
+          <div style="max-width: 400px; width: 100%; animation: fadeInUp 0.4s ease;">
+            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 24px;">
               <div style="width: 24px; height: 6px; border-radius: 3px; background: #635bff;"></div>
-              <div style="width: 6px; height: 6px; border-radius: 3px; background: #e3e8ee;"></div>
-              <div style="width: 6px; height: 6px; border-radius: 3px; background: #e3e8ee;"></div>
+              <div style="width: 6px; height: 6px; border-radius: 50%; background: #e3e8ee;"></div>
+              <div style="width: 6px; height: 6px; border-radius: 50%; background: #e3e8ee;"></div>
             </div>
             <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">Select your plan</h2>
             <p style="font-size: 14px; color: #697386; margin-bottom: 24px;">Choose the tier that fits your business. Upgrade anytime.</p>
             <div style="display: flex; flex-direction: column; gap: 10px;">
-              <div class="m-stack-option" onclick="stackSelectSplit(this, 'essential')" style="border: 1.5px solid #e3e8ee; border-radius: 12px; padding: 16px 18px; cursor: pointer; transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);">
-                <div class="m-stack-top">
-                  <div><div class="m-stack-name" style="font-size: 14px;">Verified Essential</div><div class="m-stack-price" style="font-size: 11px;">Free</div></div>
-                  <div class="m-stack-radio"></div>
+              <div class="split-plan-option" onclick="stackSelectSplit(this, 'essential')">
+                <div class="split-plan-option-top">
+                  <div><div class="split-plan-option-name">Verified Essential</div><div class="split-plan-option-price">Free</div></div>
+                  <div class="split-plan-radio"></div>
                 </div>
-                <ul class="m-stack-benefits" style="margin-top: 8px;">
+                <ul class="split-plan-benefits">
                   <li><span class="chk">&#10003;</span> Access to Instant payouts</li>
                   <li><span class="chk">&#10003;</span> Stay ahead of compliance</li>
                 </ul>
               </div>
-              <div class="m-stack-option selected" onclick="stackSelectSplit(this, 'plus')" style="border: 1.5px solid #635bff; border-radius: 12px; padding: 16px 18px; cursor: pointer; background: #fafbff; box-shadow: 0 0 0 1px #635bff; transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);">
-                <div class="m-stack-top">
-                  <div><div class="m-stack-name" style="font-size: 14px;">Verified Plus</div><div class="m-stack-price" style="font-size: 11px;">$25/month</div></div>
-                  <div class="m-stack-radio"></div>
+              <div class="split-plan-option selected" onclick="stackSelectSplit(this, 'plus')">
+                <div class="split-plan-option-top">
+                  <div><div class="split-plan-option-name">Verified Plus</div><div class="split-plan-option-price">$25/month</div></div>
+                  <div class="split-plan-radio"></div>
                 </div>
-                <ul class="m-stack-benefits" style="margin-top: 8px;">
+                <ul class="split-plan-benefits">
                   <li><span class="chk">&#10003;</span> Higher limits on instant payouts</li>
                   <li><span class="chk">&#10003;</span> Risk and compliance experts</li>
                   <li><span class="chk">&#10003;</span> Verified Plus badge</li>
@@ -708,7 +728,69 @@
                 </ul>
               </div>
             </div>
-            <button style="width: 100%; margin-top: 20px; padding: 12px; border-radius: 8px; border: none; background: #635bff; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;" onclick="selectPlan(currentSplitSelection || 'plus')">Continue &rarr;</button>
+            <button style="width: 100%; margin-top: 20px; padding: 14px; border-radius: 10px; border: none; background: #635bff; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;" onclick="selectPlan(currentSplitSelection || 'plus')">Continue &rarr;</button>
+          </div>
+        </div>
+        <div class="split-illust-panel">
+          <div class="split-illust-orb split-illust-orb-1"></div>
+          <div class="split-illust-orb split-illust-orb-2"></div>
+          <div class="split-illust-scene">
+            <div class="split-illust-shield">
+              <div class="split-illust-shield-inner"></div>
+              <span class="split-illust-shield-check">&#10003;</span>
+            </div>
+            <p class="split-illust-caption">Protection for your business</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN: Modal — Split illustration -->
+      <div class="screen screen-plan-modal" id="screenModalSplit">
+        <div class="modal-shell" style="max-width: 780px; display: flex; flex-direction: row; overflow: hidden; padding: 0;">
+          <div style="flex: 1; padding: 32px; display: flex; flex-direction: column; justify-content: center;">
+            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 20px;">
+              <div style="width: 20px; height: 5px; border-radius: 3px; background: #635bff;"></div>
+              <div style="width: 5px; height: 5px; border-radius: 50%; background: #e3e8ee;"></div>
+              <div style="width: 5px; height: 5px; border-radius: 50%; background: #e3e8ee;"></div>
+            </div>
+            <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">Select your plan</h2>
+            <p style="font-size: 13px; color: #697386; margin-bottom: 20px;">Choose the tier that fits your business. Upgrade anytime.</p>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <div class="split-plan-option" onclick="stackSelectModal(this, 'essential')">
+                <div class="split-plan-option-top">
+                  <div><div class="split-plan-option-name">Verified Essential</div><div class="split-plan-option-price">Free</div></div>
+                  <div class="split-plan-radio"></div>
+                </div>
+                <ul class="split-plan-benefits">
+                  <li><span class="chk">&#10003;</span> Access to Instant payouts</li>
+                  <li><span class="chk">&#10003;</span> Stay ahead of compliance</li>
+                </ul>
+              </div>
+              <div class="split-plan-option selected" onclick="stackSelectModal(this, 'plus')">
+                <div class="split-plan-option-top">
+                  <div><div class="split-plan-option-name">Verified Plus</div><div class="split-plan-option-price">$25/month</div></div>
+                  <div class="split-plan-radio"></div>
+                </div>
+                <ul class="split-plan-benefits">
+                  <li><span class="chk">&#10003;</span> Higher limits on instant payouts</li>
+                  <li><span class="chk">&#10003;</span> Risk and compliance experts</li>
+                  <li><span class="chk">&#10003;</span> Verified Plus badge</li>
+                  <li><span class="chk">&#10003;</span> Extended protections</li>
+                </ul>
+              </div>
+            </div>
+            <button style="width: 100%; margin-top: 16px; padding: 12px; border-radius: 10px; border: none; background: #635bff; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;" onclick="selectPlan(currentModalSplitSelection || 'plus')">Continue &rarr;</button>
+          </div>
+          <div class="split-illust-panel" style="flex: 0.8; border-radius: 0;">
+            <div class="split-illust-orb split-illust-orb-1"></div>
+            <div class="split-illust-orb split-illust-orb-2"></div>
+            <div class="split-illust-scene">
+              <div class="split-illust-shield">
+                <div class="split-illust-shield-inner"></div>
+                <span class="split-illust-shield-check">&#10003;</span>
+              </div>
+              <p class="split-illust-caption">Protection for your business</p>
+            </div>
           </div>
         </div>
       </div>
@@ -742,6 +824,7 @@
   const flowScreenMap = {
     'modal-sidebyside': 'screenModalSideBySide',
     'modal-stacked': 'screenModalStacked',
+    'modal-split': 'screenModalSplit',
     'fullpage-cards': 'screenFullCards',
     'fullpage-compare': 'screenRequirements',
     'fullpage-split': 'screenFullSplit'
@@ -825,16 +908,8 @@
   function stackSelectSplit(el, plan) {
     currentSplitSelection = plan;
     const container = el.parentElement;
-    container.querySelectorAll('.m-stack-option').forEach(o => {
-      o.classList.remove('selected');
-      o.style.borderColor = '#e3e8ee';
-      o.style.background = '#fff';
-      o.style.boxShadow = 'none';
-    });
+    container.querySelectorAll('.split-plan-option').forEach(o => o.classList.remove('selected'));
     el.classList.add('selected');
-    el.style.borderColor = '#635bff';
-    el.style.background = '#fafbff';
-    el.style.boxShadow = '0 0 0 1px #635bff';
   }
 
   function renderRequirements(plan) {
@@ -1075,6 +1150,15 @@
     currentActiveStep = 1;
     updateRequirementsUI(plan);
     updateStateDisplay();
+  }
+
+  let currentModalSplitSelection = 'plus';
+
+  function stackSelectModal(el, plan) {
+    currentModalSplitSelection = plan;
+    const container = el.parentElement;
+    container.querySelectorAll('.split-plan-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
   }
 
   function selectBankOption(el) {
