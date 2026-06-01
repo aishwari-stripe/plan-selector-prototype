@@ -200,6 +200,33 @@
     .fp-card .benefits .chk { color: #635bff; font-weight: 700; font-size: 15px; line-height: 1.4; }
     .fp-card .select-btn { padding: 12px; border-radius: 8px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
 
+    /* Comparison table layout */
+    .compare-layout { max-width: 860px; width: 100%; animation: fadeInUp 0.4s ease; }
+    .compare-header { text-align: center; margin-bottom: 32px; }
+    .compare-header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .compare-header p { font-size: 15px; color: #697386; }
+    .compare-table { border: 1px solid #e3e8ee; border-radius: 14px; overflow: hidden; }
+    .compare-row { display: grid; grid-template-columns: 1.4fr 1fr 1fr; border-bottom: 1px solid #f0f2f5; }
+    .compare-row:last-child { border-bottom: none; }
+    .compare-row-header { border-bottom: 1px solid #e3e8ee; }
+    .compare-cell { padding: 16px 20px; display: flex; align-items: center; font-size: 14px; color: #1a1a2e; }
+    .compare-cell-label { color: #425466; }
+    .compare-cell-value { justify-content: center; gap: 8px; }
+    .compare-cell-plus { background: #f8f6ff; }
+    .compare-row-header .compare-cell { padding: 24px 20px; align-items: flex-start; flex-direction: column; gap: 10px; }
+    .compare-row-header .compare-cell-label { justify-content: flex-start; }
+    .compare-plan-tier { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #1a1a2e; }
+    .compare-plan-tier.plus { color: #635bff; }
+    .compare-plan-tagline { font-size: 17px; font-weight: 700; color: #1a1a2e; line-height: 1.3; }
+    .compare-btn { padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); white-space: nowrap; }
+    .compare-btn-outline { background: #fff; color: #1a1a2e; border: 1px solid #e3e8ee; }
+    .compare-btn-outline:hover { background: #f6f8fa; border-color: #c1c9d2; }
+    .compare-btn-primary { background: #635bff; color: #fff; border: none; }
+    .compare-btn-primary:hover { background: #5851db; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(99,91,255,0.3); }
+    .compare-check { width: 24px; height: 24px; border-radius: 50%; background: #ede9fe; color: #635bff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+    .compare-dash { color: #c1c9d2; font-size: 16px; }
+    .compare-note { font-size: 13px; color: #425466; font-weight: 500; }
+
     /* Screen: Requirements — Matches Verified app flow */
     .screen-requirements { flex-direction: column; background: #fff; overflow-y: auto; }
 
@@ -341,6 +368,10 @@
     <div class="control-option" onclick="switchFlow('fullpage-cards')">
       <div class="control-option-name">Side-by-side cards</div>
       <div class="control-option-desc">Full page with two plan cards</div>
+    </div>
+    <div class="control-option" onclick="switchFlow('fullpage-compare')">
+      <div class="control-option-name">Comparison table</div>
+      <div class="control-option-desc">Feature grid with plan columns</div>
     </div>
     <div class="control-option" onclick="switchFlow('fullpage-split')">
       <div class="control-option-name">Split with illustration</div>
@@ -630,6 +661,58 @@
         </div>
       </div>
 
+      <!-- SCREEN: Full Page — Comparison table -->
+      <div class="screen screen-plan-full" id="screenFullCompare">
+        <div class="compare-layout">
+          <div class="compare-header">
+            <h1>Compare Verified plans</h1>
+            <p>Both plans help you get verified. Plus adds higher limits and dedicated support.</p>
+          </div>
+          <div class="compare-table">
+            <!-- Header row -->
+            <div class="compare-row compare-row-header">
+              <div class="compare-cell compare-cell-label"><span style="color: #697386; font-size: 13px;">Plan benefits</span></div>
+              <div class="compare-cell compare-cell-plan">
+                <div class="compare-plan-tier">Verified Essential</div>
+                <div class="compare-plan-tagline">The basics, verified</div>
+                <button class="compare-btn compare-btn-outline" onclick="selectPlan('essential')">Get Essential</button>
+              </div>
+              <div class="compare-cell compare-cell-plan compare-cell-plus">
+                <div class="compare-plan-tier plus">Verified Plus</div>
+                <div class="compare-plan-tagline">Higher limits & expert support</div>
+                <button class="compare-btn compare-btn-primary" onclick="selectPlan('plus')">Get Plus</button>
+              </div>
+            </div>
+            <!-- Feature rows -->
+            <div class="compare-row">
+              <div class="compare-cell compare-cell-label">Access to Instant payouts</div>
+              <div class="compare-cell compare-cell-value"><span class="compare-check">&#10003;</span></div>
+              <div class="compare-cell compare-cell-value compare-cell-plus"><span class="compare-check">&#10003;</span> <span class="compare-note">Higher limits</span></div>
+            </div>
+            <div class="compare-row">
+              <div class="compare-cell compare-cell-label">Stay ahead of compliance requirements</div>
+              <div class="compare-cell compare-cell-value"><span class="compare-check">&#10003;</span></div>
+              <div class="compare-cell compare-cell-value compare-cell-plus"><span class="compare-check">&#10003;</span></div>
+            </div>
+            <div class="compare-row">
+              <div class="compare-cell compare-cell-label">Risk and compliance experts</div>
+              <div class="compare-cell compare-cell-value"><span class="compare-dash">&mdash;</span></div>
+              <div class="compare-cell compare-cell-value compare-cell-plus"><span class="compare-check">&#10003;</span></div>
+            </div>
+            <div class="compare-row">
+              <div class="compare-cell compare-cell-label">Verified Plus badge in Stripe profile</div>
+              <div class="compare-cell compare-cell-value"><span class="compare-dash">&mdash;</span></div>
+              <div class="compare-cell compare-cell-value compare-cell-plus"><span class="compare-check">&#10003;</span></div>
+            </div>
+            <div class="compare-row">
+              <div class="compare-cell compare-cell-label">Extended timelines and risk protections</div>
+              <div class="compare-cell compare-cell-value"><span class="compare-dash">&mdash;</span></div>
+              <div class="compare-cell compare-cell-value compare-cell-plus"><span class="compare-check">&#10003;</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- SCREEN: Full Page — Split illustration -->
       <div class="screen screen-plan-full" id="screenFullSplit" style="flex-direction: row; padding: 0;">
         <div style="flex: 1; background: linear-gradient(135deg, #f8f6ff, #ede9fe); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
@@ -710,6 +793,7 @@
     'modal-sidebyside': 'screenModalSideBySide',
     'modal-stacked': 'screenModalStacked',
     'fullpage-cards': 'screenFullCards',
+    'fullpage-compare': 'screenFullCompare',
     'fullpage-split': 'screenFullSplit'
   };
 
