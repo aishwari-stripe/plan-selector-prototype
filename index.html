@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verified Plans — Prototype</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; color: #1a1a2e; line-height: 1.5; height: 100vh; overflow: hidden; display: flex; }
+
+    /* ==========================================
+       CONTROL PANEL
+       ========================================== */
+    .control-panel { width: 280px; background: #1a1a2e; color: #fff; padding: 24px 20px; display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0; border-right: 1px solid rgba(255,255,255,0.06); }
+    .control-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .control-logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #635bff, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .control-logo-text { font-size: 14px; font-weight: 600; }
+    .control-logo-text span { font-size: 11px; font-weight: 400; color: rgba(255,255,255,0.5); display: block; }
+
+    .control-section { margin-bottom: 24px; }
+    .control-section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.35); margin-bottom: 10px; }
+
+    .control-option { padding: 10px 12px; border-radius: 8px; cursor: pointer; transition: all 0.15s ease; margin-bottom: 4px; border: 1px solid transparent; }
+    .control-option:hover { background: rgba(255,255,255,0.04); }
+    .control-option.active { background: rgba(99, 91, 255, 0.12); border-color: rgba(99, 91, 255, 0.3); }
+    .control-option-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+    .control-option-desc { font-size: 11px; color: rgba(255,255,255,0.4); }
+    .control-option.active .control-option-desc { color: rgba(255,255,255,0.6); }
+
+    .control-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 16px 0; }
+
+    .control-state { padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); }
+    .control-state-title { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
+    .control-state-row { display: flex; align-items: center; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+    .control-state-row .label { color: rgba(255,255,255,0.4); }
+    .control-state-row .value { color: rgba(255,255,255,0.8); font-weight: 500; }
+    .control-reset { margin-top: 12px; width: 100%; padding: 7px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.12); background: transparent; color: rgba(255,255,255,0.6); font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s ease; }
+    .control-reset:hover { background: rgba(255,255,255,0.06); color: #fff; }
+
+    /* ==========================================
+       PROTOTYPE VIEWPORT
+       ========================================== */
+    .viewport { flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px; position: relative; overflow: hidden; }
+    .viewport-bg { position: absolute; inset: 0; background: #f6f8fa; }
+
+    /* The "device" frame */
+    .device-frame { position: relative; width: 100%; max-width: 1080px; height: calc(100vh - 48px); background: #fff; border-radius: 12px; box-shadow: 0 2px 20px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04); overflow: hidden; display: flex; flex-direction: column; }
+    .device-topbar { height: 40px; background: #fafbfc; border-bottom: 1px solid #e8ecf0; display: flex; align-items: center; padding: 0 16px; gap: 8px; flex-shrink: 0; }
+    .device-dot { width: 10px; height: 10px; border-radius: 50%; background: #e3e8ee; }
+    .device-dot:nth-child(1) { background: #ff6058; }
+    .device-dot:nth-child(2) { background: #ffbd2e; }
+    .device-dot:nth-child(3) { background: #27ca40; }
+    .device-url { margin-left: 12px; flex: 1; height: 24px; background: #f0f2f5; border-radius: 6px; display: flex; align-items: center; padding: 0 10px; font-size: 11px; color: #697386; }
+    .device-content { flex: 1; overflow: hidden; position: relative; }
+
+    /* ==========================================
+       FLOW SCREENS (inside the device)
+       ========================================== */
+    .screen { position: absolute; inset: 0; display: none; opacity: 0; transition: opacity 0.3s ease; }
+    .screen.active { display: flex; opacity: 1; }
+    .screen-entry.active { display: flex; }
+
+    /* Screen: Entry — Dashboard wireframe */
+    .screen-entry { display: flex; flex-direction: row; background: #fff; }
+
+    /* Dashboard sidebar */
+    .dash-sidebar { width: 200px; background: #fff; border-right: 1px solid #e8ecf0; padding: 16px 0; flex-shrink: 0; overflow-y: auto; }
+    .dash-sidebar-header { padding: 4px 16px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #f0f2f5; margin-bottom: 8px; }
+    .dash-sidebar-icon { width: 28px; height: 28px; background: #635bff; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+    .dash-sidebar-icon svg { width: 14px; height: 14px; }
+    .dash-sidebar-name { font-size: 12px; font-weight: 600; color: #1a1a2e; line-height: 1.2; }
+    .dash-sidebar-name span { font-size: 10px; font-weight: 400; color: #697386; display: block; }
+    .dash-nav-item { padding: 7px 16px; font-size: 13px; color: #425466; display: flex; align-items: center; gap: 8px; cursor: default; transition: background 0.1s; }
+    .dash-nav-item:hover { background: #f8f9fb; }
+    .dash-nav-item.active { color: #635bff; font-weight: 500; }
+    .dash-nav-item .nav-icon { width: 16px; font-size: 13px; text-align: center; color: #697386; }
+    .dash-nav-item.active .nav-icon { color: #635bff; }
+    .dash-nav-section { padding: 12px 16px 4px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: #9ca3af; }
+    .dash-nav-chevron { margin-left: auto; font-size: 10px; color: #c1c9d2; }
+
+    /* Dashboard main content */
+    .dash-main { flex: 1; overflow-y: auto; background: #fff; position: relative; }
+    .dash-topbar { height: 44px; border-bottom: 1px solid #f0f2f5; display: flex; align-items: center; padding: 0 24px; justify-content: space-between; }
+    .dash-search { width: 180px; height: 28px; background: #f6f8fa; border: 1px solid #e3e8ee; border-radius: 6px; display: flex; align-items: center; padding: 0 8px; font-size: 12px; color: #9ca3af; gap: 6px; }
+    .dash-topbar-icons { display: flex; gap: 12px; align-items: center; }
+    .dash-topbar-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #697386; }
+
+    .dash-content { padding: 24px; }
+    .dash-content h1 { font-size: 22px; font-weight: 700; color: #1a1a2e; margin-bottom: 20px; }
+
+    /* Chart placeholder */
+    .dash-chart-section { margin-bottom: 24px; }
+    .dash-chart-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
+    .dash-chart-header .label { font-size: 13px; color: #697386; }
+    .dash-chart-header .chevron { font-size: 10px; color: #c1c9d2; }
+    .dash-chart-value { font-size: 22px; font-weight: 700; color: #1a1a2e; margin-bottom: 12px; }
+    .dash-chart { height: 100px; background: #fafbfc; border: 1px solid #f0f2f5; border-radius: 8px; position: relative; overflow: hidden; display: flex; align-items: flex-end; padding: 0 8px 20px; gap: 3px; }
+    .dash-chart-bar { flex: 1; background: #e8ecf0; border-radius: 2px 2px 0 0; min-height: 2px; }
+    .dash-chart-axis { position: absolute; bottom: 4px; left: 12px; right: 12px; display: flex; justify-content: space-between; font-size: 9px; color: #9ca3af; }
+
+    /* Balance row */
+    .dash-balance-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #f0f2f5; }
+    .dash-balance-item .bal-header { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+    .dash-balance-item .bal-label { font-size: 13px; color: #697386; }
+    .dash-balance-item .bal-link { font-size: 12px; color: #635bff; font-weight: 500; margin-left: auto; }
+    .dash-balance-item .bal-value { font-size: 20px; font-weight: 700; color: #1a1a2e; }
+
+    /* Floating setup guide */
+    .setup-guide { position: absolute; bottom: 16px; right: 16px; width: 280px; background: #fff; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04); z-index: 10; animation: slideUp 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94); overflow: hidden; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .setup-guide-header { padding: 14px 16px 12px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f0f2f5; }
+    .setup-guide-header h3 { font-size: 14px; font-weight: 600; }
+    .setup-guide-header-actions { display: flex; gap: 6px; }
+    .setup-guide-header-actions button { width: 24px; height: 24px; border: none; background: none; cursor: pointer; color: #9ca3af; font-size: 12px; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
+    .setup-guide-header-actions button:hover { background: #f6f8fa; color: #697386; }
+    .setup-guide-progress { height: 3px; background: #e8ecf0; }
+    .setup-guide-progress-fill { height: 100%; width: 50%; background: #635bff; border-radius: 0 2px 2px 0; transition: width 0.3s ease; }
+    .setup-guide-section { border-bottom: 1px solid #f0f2f5; }
+    .setup-guide-section:last-child { border-bottom: none; }
+    .setup-guide-section-header { padding: 12px 16px; font-size: 13px; font-weight: 500; color: #1a1a2e; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+    .setup-guide-section-header .sg-chevron { font-size: 10px; color: #c1c9d2; transition: transform 0.2s ease; }
+    .setup-guide-section-header .sg-chevron.open { transform: rotate(180deg); }
+    .setup-guide-items { padding: 0 16px 12px; }
+    .setup-guide-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: 13px; color: #425466; cursor: pointer; transition: color 0.15s; }
+    .setup-guide-item:hover { color: #1a1a2e; }
+    .setup-guide-item .sg-dot { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid #d1d5db; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 9px; color: transparent; }
+    .setup-guide-item.done .sg-dot { background: #635bff; border-color: #635bff; color: #fff; }
+    .setup-guide-item.done { color: #9ca3af; text-decoration: line-through; }
+    .setup-guide-item.clickable { color: #1a1a2e; font-weight: 500; }
+    .setup-guide-item.clickable:hover { color: #635bff; }
+    .setup-guide-item.clickable .sg-dot { border-color: #635bff; border-style: dashed; }
+
+    /* Screen: Plan selector — MODAL variant */
+    .screen-plan-modal { align-items: center; justify-content: center; background: rgba(0,0,0,0.4); backdrop-filter: blur(2px); }
+    .modal-shell { background: #fff; border-radius: 16px; width: 90%; max-width: 600px; max-height: 85%; overflow-y: auto; animation: modalIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); position: relative; }
+    @keyframes modalIn { from { opacity: 0; transform: scale(0.96) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    .modal-shell-header { padding: 28px 28px 0; }
+    .modal-shell-header h2 { font-size: 20px; font-weight: 700; }
+    .modal-shell-header p { font-size: 14px; color: #697386; margin-top: 4px; }
+    .modal-shell-close { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 8px; border: none; background: #f6f8fa; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #697386; transition: all 0.15s; }
+    .modal-shell-close:hover { background: #e3e8ee; }
+
+    /* Modal side-by-side body */
+    .modal-cards-body { padding: 24px 28px 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .m-plan-card { border: 1.5px solid #e3e8ee; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; cursor: pointer; transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+    .m-plan-card:hover { border-color: #c1c9d2; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .m-plan-card.highlighted { border-color: #635bff; background: #fafbff; }
+    .m-plan-card.highlighted:hover { box-shadow: 0 4px 16px rgba(99,91,255,0.12); }
+    .m-plan-card-badge { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #697386; margin-bottom: 6px; }
+    .m-plan-card.highlighted .m-plan-card-badge { color: #635bff; }
+    .m-plan-card-name { font-size: 17px; font-weight: 600; margin-bottom: 2px; }
+    .m-plan-card-price { font-size: 12px; color: #697386; margin-bottom: 14px; }
+    .m-plan-card .benefits { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; flex: 1; }
+    .m-plan-card .benefits li { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: #425466; }
+    .m-plan-card .benefits .chk { color: #635bff; font-weight: 700; font-size: 14px; line-height: 1.4; flex-shrink: 0; }
+    .m-plan-card .select-btn { padding: 10px; border-radius: 8px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+    .m-plan-card .select-btn.btn-outline { background: #fff; color: #1a1a2e; border: 1px solid #e3e8ee; }
+    .m-plan-card .select-btn.btn-outline:hover { background: #f6f8fa; border-color: #c1c9d2; }
+    .m-plan-card .select-btn.btn-primary { background: #635bff; color: #fff; }
+    .m-plan-card .select-btn.btn-primary:hover { background: #5851db; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(99,91,255,0.3); }
+
+    /* Modal stacked body */
+    .modal-stacked-body { padding: 24px 28px 28px; display: flex; flex-direction: column; gap: 10px; }
+    .m-stack-option { border: 1.5px solid #e3e8ee; border-radius: 12px; padding: 18px 20px; cursor: pointer; transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+    .m-stack-option:hover { border-color: #c1c9d2; transform: translateY(-1px); }
+    .m-stack-option.selected { border-color: #635bff; background: #fafbff; box-shadow: 0 0 0 1px #635bff; }
+    .m-stack-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .m-stack-name { font-size: 15px; font-weight: 600; }
+    .m-stack-price { font-size: 12px; color: #697386; font-weight: 500; }
+    .m-stack-radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #c1c9d2; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; flex-shrink: 0; }
+    .m-stack-option.selected .m-stack-radio { border-color: #635bff; }
+    .m-stack-option.selected .m-stack-radio::after { content: ''; width: 9px; height: 9px; border-radius: 50%; background: #635bff; animation: popIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+    .m-stack-benefits { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .m-stack-benefits li { font-size: 13px; color: #697386; display: flex; align-items: center; gap: 8px; }
+    .m-stack-benefits .chk { color: #635bff; font-weight: 700; font-size: 13px; }
+    .m-stack-option.selected .m-stack-benefits li { color: #425466; }
+    .modal-stacked-footer { padding: 0 28px 28px; }
+    .modal-stacked-footer button { width: 100%; padding: 12px; border-radius: 8px; border: none; background: #635bff; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+    .modal-stacked-footer button:hover { background: #5851db; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(99,91,255,0.3); }
+
+    /* Screen: Plan selector — FULL PAGE variant */
+    .screen-plan-full { flex-direction: column; align-items: center; justify-content: center; background: #fff; padding: 40px; overflow-y: auto; }
+    .fullpage-plan { animation: fadeInUp 0.4s ease; max-width: 780px; width: 100%; }
+    .fullpage-plan-header { text-align: center; margin-bottom: 32px; }
+    .fullpage-plan-header h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+    .fullpage-plan-header p { font-size: 15px; color: #697386; }
+    .fullpage-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .fp-card { border: 1.5px solid #e3e8ee; border-radius: 14px; padding: 28px; cursor: pointer; transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94); display: flex; flex-direction: column; }
+    .fp-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
+    .fp-card.featured { border-color: #635bff; position: relative; }
+    .fp-card.featured::before { content: 'Recommended'; position: absolute; top: -9px; left: 20px; background: #635bff; color: #fff; font-size: 10px; font-weight: 600; padding: 2px 10px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .fp-card.featured:hover { box-shadow: 0 10px 30px rgba(99,91,255,0.12); }
+    .fp-card-tier { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #697386; margin-bottom: 6px; }
+    .fp-card.featured .fp-card-tier { color: #635bff; }
+    .fp-card-name { font-size: 20px; font-weight: 700; margin-bottom: 2px; }
+    .fp-card-price { font-size: 13px; color: #697386; margin-bottom: 18px; }
+    .fp-card .benefits { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; flex: 1; }
+    .fp-card .benefits li { display: flex; align-items: flex-start; gap: 9px; font-size: 14px; color: #425466; }
+    .fp-card .benefits .chk { color: #635bff; font-weight: 700; font-size: 15px; line-height: 1.4; }
+    .fp-card .select-btn { padding: 12px; border-radius: 8px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+
+    /* Screen: Requirements — Matches Verified app flow */
+    .screen-requirements { flex-direction: column; background: #fff; overflow-y: auto; }
+
+    /* Top orange gradient bar */
+    .req-topbar-gradient { height: 4px; background: linear-gradient(90deg, #ff6b35, #ff9f1c, #ffca28); flex-shrink: 0; }
+
+    /* Header bar */
+    .req-topbar { height: 52px; background: #fff; border-bottom: 1px solid #e8ecf0; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; flex-shrink: 0; }
+    .req-topbar-title { font-size: 15px; font-weight: 600; color: #635bff; }
+    .req-topbar-exit { padding: 7px 14px; border-radius: 6px; border: 1px solid #e3e8ee; background: #fff; font-size: 13px; font-weight: 500; color: #1a1a2e; cursor: pointer; transition: all 0.15s; }
+    .req-topbar-exit:hover { background: #f6f8fa; border-color: #c1c9d2; }
+
+    /* Main layout */
+    .req-layout { display: flex; flex: 1; overflow: hidden; }
+
+    /* Left rail stepper */
+    .req-rail { width: 220px; padding: 32px 24px; flex-shrink: 0; }
+    .req-step { display: flex; align-items: flex-start; gap: 12px; position: relative; padding-bottom: 20px; cursor: pointer; transition: opacity 0.15s; }
+    .req-step:last-child { padding-bottom: 0; }
+    .req-step::before { content: ''; position: absolute; left: 9px; top: 22px; bottom: 0; width: 1.5px; border-left: 1.5px dashed #d1d5db; }
+    .req-step:last-child::before { display: none; }
+    .req-step.completed::before { border-left-style: solid; border-left-color: #635bff; }
+    .req-step-dot { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; position: relative; z-index: 1; transition: all 0.2s ease; }
+    .req-step.completed .req-step-dot { background: #635bff; border: none; }
+    .req-step.completed .req-step-dot::after { content: ''; width: 8px; height: 5px; border-left: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(-45deg); margin-top: -1px; }
+    .req-step.active .req-step-dot { border: 2px solid #635bff; background: #fff; box-shadow: 0 0 0 3px rgba(99,91,255,0.12); }
+    .req-step.active .req-step-dot::after { content: none; }
+    .req-step.pending .req-step-dot { border: 1.5px dashed #d1d5db; background: #fff; }
+    .req-step.pending .req-step-dot::after { content: none; }
+    .req-step-dot { font-size: 0; overflow: hidden; }
+    .req-step-label { font-size: 13px; font-weight: 500; color: #697386; padding-top: 1px; transition: color 0.15s; }
+    .req-step.completed .req-step-label { color: #1a1a2e; }
+    .req-step.active .req-step-label { color: #635bff; font-weight: 600; }
+
+    /* Content area */
+    .req-content { flex: 1; padding: 32px 48px; max-width: 600px; animation: fadeInUp 0.35s ease; }
+    .req-content-back { display: flex; align-items: center; gap: 4px; font-size: 13px; color: #635bff; font-weight: 500; cursor: pointer; margin-bottom: 20px; border: none; background: none; transition: opacity 0.15s; }
+    .req-content-back:hover { opacity: 0.7; }
+    .req-content h1 { font-size: 24px; font-weight: 700; color: #1a1a2e; margin-bottom: 10px; }
+    .req-content .req-desc { font-size: 14px; color: #425466; line-height: 1.6; margin-bottom: 24px; }
+    .req-content .req-desc a { color: #1a1a2e; text-decoration: underline; }
+
+    /* Info card */
+    .req-info-card { background: #fff; border: 1px solid #e3e8ee; border-radius: 10px; padding: 20px; margin-bottom: 28px; }
+    .req-info-card h3 { font-size: 14px; font-weight: 600; color: #1a1a2e; margin-bottom: 14px; }
+    .req-info-field { margin-bottom: 12px; }
+    .req-info-field:last-child { margin-bottom: 0; }
+    .req-info-field .field-label { font-size: 12px; font-weight: 600; color: #1a1a2e; margin-bottom: 1px; }
+    .req-info-field .field-value { font-size: 13px; color: #697386; }
+
+    /* Continue button */
+    .req-continue-btn { width: 100%; max-width: 480px; padding: 14px; border-radius: 10px; border: none; background: #635bff; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+    .req-continue-btn:hover:not(:disabled) { background: #5851db; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(99,91,255,0.3); }
+    .req-continue-btn:active:not(:disabled) { transform: translateY(0); }
+    .req-continue-btn:disabled { background: #c4c1f7; cursor: not-allowed; opacity: 0.6; }
+
+    /* User info row */
+    .req-user-row { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #f0f2f5; }
+    .req-user-row .user-name { font-size: 14px; font-weight: 600; color: #1a1a2e; }
+    .req-user-row .user-email { font-size: 13px; color: #697386; margin-top: 2px; }
+    .req-user-row .user-edit { font-size: 13px; color: #635bff; font-weight: 500; cursor: pointer; text-decoration: none; }
+    .req-user-row .user-edit:hover { text-decoration: underline; }
+
+    /* Form field label + description */
+    .req-field-group { margin-bottom: 24px; }
+    .req-field-label { font-size: 14px; font-weight: 600; color: #1a1a2e; margin-bottom: 4px; }
+    .req-field-desc { font-size: 13px; color: #697386; line-height: 1.5; margin-bottom: 12px; }
+
+    /* Input with country prefix */
+    .req-input-group { display: flex; border: 1px solid #d1d5db; border-radius: 8px; overflow: hidden; max-width: 480px; transition: border-color 0.15s; }
+    .req-input-group:focus-within { border-color: #635bff; box-shadow: 0 0 0 3px rgba(99,91,255,0.08); }
+    .req-input-prefix { display: flex; align-items: center; gap: 4px; padding: 10px 10px 10px 12px; font-size: 13px; color: #425466; background: #fff; border-right: 1px solid #e8ecf0; user-select: none; }
+    .req-input-prefix .prefix-chevron { font-size: 8px; color: #9ca3af; }
+    .req-input-group input { flex: 1; border: none; outline: none; padding: 10px 12px; font-size: 14px; color: #1a1a2e; }
+    .req-input-group input::placeholder { color: #9ca3af; }
+
+    /* Standard input */
+    .req-input { width: 100%; max-width: 480px; border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 12px; font-size: 14px; color: #1a1a2e; outline: none; transition: border-color 0.15s; }
+    .req-input:focus { border-color: #635bff; box-shadow: 0 0 0 3px rgba(99,91,255,0.08); }
+    .req-input::placeholder { color: #9ca3af; }
+
+    /* Dashed empty state */
+    .req-empty-state { border: 1.5px dashed #d1d5db; border-radius: 10px; padding: 28px; text-align: center; margin-bottom: 12px; max-width: 480px; }
+    .req-empty-state p { font-size: 13px; color: #9ca3af; }
+
+    /* Outline button */
+    .req-outline-btn { width: 100%; max-width: 480px; padding: 12px; border-radius: 8px; border: 1px solid #e3e8ee; background: #fff; font-size: 14px; font-weight: 500; color: #1a1a2e; cursor: pointer; transition: all 0.15s; margin-bottom: 16px; }
+    .req-outline-btn:hover { background: #f6f8fa; border-color: #c1c9d2; }
+
+    /* Bullet list */
+    .req-bullet-list { list-style: none; padding-left: 0; margin-bottom: 0; }
+    .req-bullet-list li { font-size: 14px; color: #425466; padding: 3px 0; padding-left: 16px; position: relative; }
+    .req-bullet-list li::before { content: '\00B7'; position: absolute; left: 4px; font-size: 20px; line-height: 1; color: #697386; }
+
+    /* Option cards (bank account step) */
+    .req-option-card { border: 1.5px solid #e3e8ee; border-radius: 10px; padding: 16px 18px; margin-bottom: 10px; max-width: 480px; cursor: pointer; transition: all 0.2s ease; position: relative; }
+    .req-option-card:hover { border-color: #c1c9d2; }
+    .req-option-card.selected { border-color: #635bff; background: #fafbff; box-shadow: 0 0 0 1px #635bff; }
+    .req-option-badge { display: none; position: absolute; top: -9px; left: 14px; background: #635bff; color: #fff; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.3px; }
+    .req-option-card.selected .req-option-badge { display: block; }
+    .req-option-row { display: flex; align-items: flex-start; gap: 12px; }
+    .req-option-icon { font-size: 16px; margin-top: 2px; }
+    .req-option-title { font-size: 14px; font-weight: 600; color: #1a1a2e; margin-bottom: 2px; }
+    .req-option-desc { font-size: 13px; color: #697386; }
+
+    /* Checkbox row for terms */
+    .req-checkbox-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 16px; max-width: 480px; }
+    .req-checkbox { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid #d1d5db; flex-shrink: 0; margin-top: 2px; cursor: pointer; appearance: none; -webkit-appearance: none; transition: all 0.15s; }
+    .req-checkbox:checked { background: #635bff; border-color: #635bff; }
+    .req-checkbox-label { font-size: 13px; color: #425466; line-height: 1.5; }
+
+    /* Animations */
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+
+<!-- CONTROL PANEL -->
+<div class="control-panel">
+  <div class="control-logo">
+    <div class="control-logo-icon">&#9889;</div>
+    <div class="control-logo-text">Verified Plans<span>Prototype Flows</span></div>
+  </div>
+
+  <div class="control-section">
+    <div class="control-section-title">Modal Layouts</div>
+    <div class="control-option active" onclick="switchFlow('modal-sidebyside')">
+      <div class="control-option-name">Side-by-side cards</div>
+      <div class="control-option-desc">Two cards in a modal dialog</div>
+    </div>
+    <div class="control-option" onclick="switchFlow('modal-stacked')">
+      <div class="control-option-name">Stacked selection</div>
+      <div class="control-option-desc">Radio-style vertical cards in modal</div>
+    </div>
+  </div>
+
+  <div class="control-section">
+    <div class="control-section-title">Full Page Layouts</div>
+    <div class="control-option" onclick="switchFlow('fullpage-cards')">
+      <div class="control-option-name">Side-by-side cards</div>
+      <div class="control-option-desc">Full page with two plan cards</div>
+    </div>
+    <div class="control-option" onclick="switchFlow('fullpage-split')">
+      <div class="control-option-name">Split with illustration</div>
+      <div class="control-option-desc">Illustration left, selection right</div>
+    </div>
+  </div>
+
+  <div class="control-divider"></div>
+
+  <div class="control-section">
+    <div class="control-section-title">Flow State</div>
+    <div class="control-state">
+      <div class="control-state-title">Current Step</div>
+      <div class="control-state-row">
+        <span class="label">Screen</span>
+        <span class="value" id="stateScreen">Entry</span>
+      </div>
+      <div class="control-state-row">
+        <span class="label">Plan</span>
+        <span class="value" id="statePlan">—</span>
+      </div>
+      <div class="control-state-row">
+        <span class="label">Layout</span>
+        <span class="value" id="stateLayout">Modal</span>
+      </div>
+      <button class="control-reset" onclick="resetFlow()">Reset flow</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEWPORT -->
+<div class="viewport">
+  <div class="viewport-bg"></div>
+  <div class="device-frame">
+    <div class="device-topbar">
+      <div class="device-dot"></div>
+      <div class="device-dot"></div>
+      <div class="device-dot"></div>
+      <div class="device-url" id="deviceUrl">dashboard.stripe.com/verified</div>
+    </div>
+    <div class="device-content" id="deviceContent">
+
+      <!-- SCREEN: Entry point — Dashboard wireframe -->
+      <div class="screen screen-entry active" id="screenEntry">
+        <!-- Sidebar -->
+        <div class="dash-sidebar">
+          <div class="dash-sidebar-header">
+            <div class="dash-sidebar-icon"><span style="color:#fff; font-size:12px; font-weight:700;">S</span></div>
+            <div class="dash-sidebar-name">Default sandbox<span>Cactus Practice</span></div>
+          </div>
+          <div class="dash-nav-item active"><span class="nav-icon">&#8962;</span> Home</div>
+          <div class="dash-nav-item"><span class="nav-icon">&#8801;</span> Balances</div>
+          <div class="dash-nav-item"><span class="nav-icon">&#8644;</span> Transactions</div>
+          <div class="dash-nav-item"><span class="nav-icon">&#9906;</span> Customers</div>
+          <div class="dash-nav-item"><span class="nav-icon">&#9776;</span> Product catalog</div>
+          <div class="dash-nav-section">Shortcuts</div>
+          <div class="dash-nav-item"><span class="nav-icon">&#8635;</span> Subscriptions</div>
+          <div class="dash-nav-section">Products</div>
+          <div class="dash-nav-item"><span class="nav-icon">&#9672;</span> Connect <span class="dash-nav-chevron">&#9662;</span></div>
+          <div class="dash-nav-item"><span class="nav-icon">&#9645;</span> Payments <span class="dash-nav-chevron">&#9662;</span></div>
+          <div class="dash-nav-item"><span class="nav-icon">&#9636;</span> Billing <span class="dash-nav-chevron">&#9662;</span></div>
+          <div class="dash-nav-item"><span class="nav-icon">&#9652;</span> Reporting <span class="dash-nav-chevron">&#9662;</span></div>
+          <div class="dash-nav-item"><span class="nav-icon">&#8943;</span> More <span class="dash-nav-chevron">&#9662;</span></div>
+        </div>
+
+        <!-- Main content area -->
+        <div class="dash-main">
+          <div class="dash-topbar">
+            <div class="dash-search"><span>&#128269;</span> Search</div>
+            <div class="dash-topbar-icons">
+              <div class="dash-topbar-icon">&#8862;</div>
+              <div class="dash-topbar-icon">&#63;</div>
+              <div class="dash-topbar-icon">&#128276;</div>
+              <div class="dash-topbar-icon">&#9881;</div>
+              <div class="dash-topbar-icon" style="background: #635bff; color: #fff; border-radius: 50%; font-size: 14px; font-weight: 700;">+</div>
+            </div>
+          </div>
+          <div class="dash-content">
+            <h1>Today</h1>
+
+            <div class="dash-chart-section">
+              <div class="dash-chart-header">
+                <span class="label">Gross volume</span><span class="chevron">&#9662;</span>
+              </div>
+              <div class="dash-chart-value">$0.00</div>
+              <div class="dash-chart">
+                <div class="dash-chart-bar" style="height: 3px;"></div>
+                <div class="dash-chart-bar" style="height: 3px;"></div>
+                <div class="dash-chart-bar" style="height: 3px;"></div>
+                <div class="dash-chart-bar" style="height: 3px;"></div>
+                <div class="dash-chart-bar" style="height: 3px;"></div>
+                <div class="dash-chart-bar" style="height: 3px;"></div>
+                <div class="dash-chart-bar" style="height: 3px;"></div>
+                <div class="dash-chart-bar" style="height: 3px;"></div>
+                <div class="dash-chart-bar" style="height: 3px;"></div>
+                <div class="dash-chart-bar" style="height: 3px;"></div>
+                <div class="dash-chart-bar" style="height: 3px;"></div>
+                <div class="dash-chart-bar" style="height: 3px;"></div>
+                <div class="dash-chart-axis"><span>12:00 AM</span><span>11:59 PM</span></div>
+              </div>
+            </div>
+
+            <div class="dash-balance-row">
+              <div class="dash-balance-item">
+                <div class="bal-header"><span class="bal-label">USD Balance</span><span class="chevron" style="font-size:10px; color:#c1c9d2;">&#9662;</span><span class="bal-link">View</span></div>
+                <div class="bal-value">$0.00</div>
+              </div>
+              <div class="dash-balance-item">
+                <div class="bal-header"><span class="bal-label">Payouts</span><span class="bal-link">View</span></div>
+                <div class="bal-value">$0.00</div>
+              </div>
+            </div>
+
+            <div class="dash-chart-section">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                <div>
+                  <div class="dash-chart-header"><span class="label">Gross volume</span><span class="chevron">&#9662;</span></div>
+                  <div class="dash-chart-value">$0.00</div>
+                  <div class="dash-chart" style="height: 80px;">
+                    <div class="dash-chart-bar" style="height: 3px;"></div>
+                    <div class="dash-chart-bar" style="height: 3px;"></div>
+                    <div class="dash-chart-bar" style="height: 3px;"></div>
+                    <div class="dash-chart-bar" style="height: 3px;"></div>
+                    <div class="dash-chart-bar" style="height: 3px;"></div>
+                    <div class="dash-chart-bar" style="height: 3px;"></div>
+                    <div class="dash-chart-bar" style="height: 3px;"></div>
+                    <div class="dash-chart-bar" style="height: 3px;"></div>
+                    <div class="dash-chart-axis"><span>12:00 AM</span><span>11:59 PM</span></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="dash-chart-header"><span class="label">USD Balance</span><span class="chevron">&#9662;</span><span class="bal-link" style="margin-left: auto; font-size: 12px; color: #635bff;">View</span></div>
+                  <div class="dash-chart-value">$0.00</div>
+                  <div class="dash-chart" style="height: 80px;">
+                    <div class="dash-chart-bar" style="height: 3px;"></div>
+                    <div class="dash-chart-bar" style="height: 3px;"></div>
+                    <div class="dash-chart-bar" style="height: 3px;"></div>
+                    <div class="dash-chart-bar" style="height: 3px;"></div>
+                    <div class="dash-chart-bar" style="height: 3px;"></div>
+                    <div class="dash-chart-bar" style="height: 3px;"></div>
+                    <div class="dash-chart-axis"><span>12:00 AM</span><span>11:59 PM</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Floating Setup Guide -->
+          <div class="setup-guide">
+            <div class="setup-guide-header">
+              <h3>Setup guide</h3>
+              <div class="setup-guide-header-actions">
+                <button>&#8599;</button>
+                <button>&times;</button>
+              </div>
+            </div>
+            <div class="setup-guide-progress"><div class="setup-guide-progress-fill"></div></div>
+            <div class="setup-guide-section">
+              <div class="setup-guide-section-header">Set up recurring payments <span class="sg-chevron">&#9662;</span></div>
+            </div>
+            <div class="setup-guide-section">
+              <div class="setup-guide-section-header">Finish your setup <span class="sg-chevron open">&#9662;</span></div>
+              <div class="setup-guide-items">
+                <div class="setup-guide-item done"><span class="sg-dot">&#10003;</span> Verify your email</div>
+                <div class="setup-guide-item done"><span class="sg-dot">&#10003;</span> Verify your business</div>
+                <div class="setup-guide-item"><span class="sg-dot"></span> Create your Stripe profile</div>
+                <div class="setup-guide-item clickable" onclick="openPlanSelector()"><span class="sg-dot"></span> Get Stripe Verified</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN: Modal — Side by side -->
+      <div class="screen screen-plan-modal" id="screenModalSideBySide">
+        <div class="modal-shell">
+          <button class="modal-shell-close" onclick="resetFlow()">&times;</button>
+          <div class="modal-shell-header">
+            <h2>Choose your plan</h2>
+            <p>Select the verification tier that fits your needs.</p>
+          </div>
+          <div class="modal-cards-body">
+            <div class="m-plan-card">
+              <div class="m-plan-card-badge">Essential</div>
+              <div class="m-plan-card-name">Verified Essential</div>
+              <div class="m-plan-card-price">Free</div>
+              <ul class="benefits">
+                <li><span class="chk">&#10003;</span> Access to Instant payouts</li>
+                <li><span class="chk">&#10003;</span> Stay ahead of compliance requirements</li>
+              </ul>
+              <button class="select-btn btn-outline" onclick="selectPlan('essential')">Select Essential</button>
+            </div>
+            <div class="m-plan-card highlighted">
+              <div class="m-plan-card-badge">Plus</div>
+              <div class="m-plan-card-name">Verified Plus</div>
+              <div class="m-plan-card-price">$25/month</div>
+              <ul class="benefits">
+                <li><span class="chk">&#10003;</span> Higher limits on instant payouts</li>
+                <li><span class="chk">&#10003;</span> Stay ahead of compliance requirements</li>
+                <li><span class="chk">&#10003;</span> Risk and compliance experts</li>
+                <li><span class="chk">&#10003;</span> Verified Plus badge</li>
+                <li><span class="chk">&#10003;</span> Extended timelines and risk protections</li>
+              </ul>
+              <button class="select-btn btn-primary" onclick="selectPlan('plus')">Select Plus</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN: Modal — Stacked -->
+      <div class="screen screen-plan-modal" id="screenModalStacked">
+        <div class="modal-shell">
+          <button class="modal-shell-close" onclick="resetFlow()">&times;</button>
+          <div class="modal-shell-header">
+            <h2>Choose your plan</h2>
+            <p>Select the verification tier that fits your needs.</p>
+          </div>
+          <div class="modal-stacked-body">
+            <div class="m-stack-option" onclick="stackSelect(this, 'essential')">
+              <div class="m-stack-top">
+                <div>
+                  <div class="m-stack-name">Verified Essential</div>
+                  <div class="m-stack-price">Free</div>
+                </div>
+                <div class="m-stack-radio"></div>
+              </div>
+              <ul class="m-stack-benefits">
+                <li><span class="chk">&#10003;</span> Access to Instant payouts</li>
+                <li><span class="chk">&#10003;</span> Stay ahead of compliance requirements</li>
+              </ul>
+            </div>
+            <div class="m-stack-option selected" onclick="stackSelect(this, 'plus')">
+              <div class="m-stack-top">
+                <div>
+                  <div class="m-stack-name">Verified Plus</div>
+                  <div class="m-stack-price">$25/month</div>
+                </div>
+                <div class="m-stack-radio"></div>
+              </div>
+              <ul class="m-stack-benefits">
+                <li><span class="chk">&#10003;</span> Higher limits on instant payouts</li>
+                <li><span class="chk">&#10003;</span> Stay ahead of compliance requirements</li>
+                <li><span class="chk">&#10003;</span> Risk and compliance experts</li>
+                <li><span class="chk">&#10003;</span> Verified Plus badge</li>
+                <li><span class="chk">&#10003;</span> Extended timelines and risk protections</li>
+              </ul>
+            </div>
+          </div>
+          <div class="modal-stacked-footer">
+            <button onclick="selectPlan(currentStackSelection || 'plus')">Continue</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN: Full Page — Side by side -->
+      <div class="screen screen-plan-full" id="screenFullCards">
+        <div class="fullpage-plan">
+          <div class="fullpage-plan-header">
+            <h1>Choose your Verified plan</h1>
+            <p>Unlock verification benefits that protect and grow your business.</p>
+          </div>
+          <div class="fullpage-cards">
+            <div class="fp-card">
+              <div class="fp-card-tier">Essential</div>
+              <div class="fp-card-name">Verified Essential</div>
+              <div class="fp-card-price">Free</div>
+              <ul class="benefits">
+                <li><span class="chk">&#10003;</span> Access to Instant payouts</li>
+                <li><span class="chk">&#10003;</span> Stay ahead of compliance requirements</li>
+              </ul>
+              <button class="select-btn btn-outline" onclick="selectPlan('essential')">Get started</button>
+            </div>
+            <div class="fp-card featured">
+              <div class="fp-card-tier">Plus</div>
+              <div class="fp-card-name">Verified Plus</div>
+              <div class="fp-card-price">$25/month</div>
+              <ul class="benefits">
+                <li><span class="chk">&#10003;</span> Higher limits on instant payouts</li>
+                <li><span class="chk">&#10003;</span> Stay ahead of compliance requirements</li>
+                <li><span class="chk">&#10003;</span> Risk and compliance experts</li>
+                <li><span class="chk">&#10003;</span> Verified Plus badge in Stripe profile</li>
+                <li><span class="chk">&#10003;</span> Extended timelines and risk protections</li>
+              </ul>
+              <button class="select-btn btn-primary" onclick="selectPlan('plus')">Upgrade to Plus</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN: Full Page — Split illustration -->
+      <div class="screen screen-plan-full" id="screenFullSplit" style="flex-direction: row; padding: 0;">
+        <div style="flex: 1; background: linear-gradient(135deg, #f8f6ff, #ede9fe); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
+          <div style="position: absolute; width: 200px; height: 200px; background: rgba(99,91,255,0.08); border-radius: 50%; top: 15%; right: -10%;"></div>
+          <div style="position: absolute; width: 150px; height: 150px; background: rgba(139,92,246,0.06); border-radius: 50%; bottom: 20%; left: -5%;"></div>
+          <div style="position: relative; text-align: center;">
+            <div style="width: 120px; height: 140px; margin: 0 auto; position: relative;">
+              <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #635bff, #8b5cf6); clip-path: polygon(50% 0%, 100% 15%, 100% 70%, 50% 100%, 0% 70%, 0% 15%); display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 16px 48px rgba(99,91,255,0.25);"><div style="position: absolute; inset: 4px; background: linear-gradient(135deg, #ede9fe, #f8f6ff); clip-path: polygon(50% 0%, 100% 15%, 100% 70%, 50% 100%, 0% 70%, 0% 15%);"></div><span style="position: relative; font-size: 32px; z-index: 1;">&#10003;</span></div>
+            </div>
+            <p style="margin-top: 20px; font-size: 14px; color: #697386; font-weight: 500;">Protection for your business</p>
+          </div>
+        </div>
+        <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px; background: #fff;">
+          <div style="max-width: 380px; width: 100%; animation: fadeInUp 0.4s ease;">
+            <div style="display: flex; gap: 6px; margin-bottom: 24px;">
+              <div style="width: 24px; height: 6px; border-radius: 3px; background: #635bff;"></div>
+              <div style="width: 6px; height: 6px; border-radius: 3px; background: #e3e8ee;"></div>
+              <div style="width: 6px; height: 6px; border-radius: 3px; background: #e3e8ee;"></div>
+            </div>
+            <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">Select your plan</h2>
+            <p style="font-size: 14px; color: #697386; margin-bottom: 24px;">Choose the tier that fits your business. Upgrade anytime.</p>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div class="m-stack-option" onclick="stackSelectSplit(this, 'essential')" style="border: 1.5px solid #e3e8ee; border-radius: 12px; padding: 16px 18px; cursor: pointer; transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);">
+                <div class="m-stack-top">
+                  <div><div class="m-stack-name" style="font-size: 14px;">Verified Essential</div><div class="m-stack-price" style="font-size: 11px;">Free</div></div>
+                  <div class="m-stack-radio"></div>
+                </div>
+                <ul class="m-stack-benefits" style="margin-top: 8px;">
+                  <li><span class="chk">&#10003;</span> Access to Instant payouts</li>
+                  <li><span class="chk">&#10003;</span> Stay ahead of compliance</li>
+                </ul>
+              </div>
+              <div class="m-stack-option selected" onclick="stackSelectSplit(this, 'plus')" style="border: 1.5px solid #635bff; border-radius: 12px; padding: 16px 18px; cursor: pointer; background: #fafbff; box-shadow: 0 0 0 1px #635bff; transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);">
+                <div class="m-stack-top">
+                  <div><div class="m-stack-name" style="font-size: 14px;">Verified Plus</div><div class="m-stack-price" style="font-size: 11px;">$25/month</div></div>
+                  <div class="m-stack-radio"></div>
+                </div>
+                <ul class="m-stack-benefits" style="margin-top: 8px;">
+                  <li><span class="chk">&#10003;</span> Higher limits on instant payouts</li>
+                  <li><span class="chk">&#10003;</span> Risk and compliance experts</li>
+                  <li><span class="chk">&#10003;</span> Verified Plus badge</li>
+                  <li><span class="chk">&#10003;</span> Extended protections</li>
+                </ul>
+              </div>
+            </div>
+            <button style="width: 100%; margin-top: 20px; padding: 12px; border-radius: 8px; border: none; background: #635bff; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;" onclick="selectPlan(currentSplitSelection || 'plus')">Continue &rarr;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN: Requirements (shared, content changes by plan) -->
+      <div class="screen screen-requirements" id="screenRequirements">
+        <div class="req-topbar-gradient"></div>
+        <div class="req-topbar">
+          <div class="req-topbar-title">Verified</div>
+          <button class="req-topbar-exit" onclick="resetFlow()">Save and exit</button>
+        </div>
+        <div class="req-layout">
+          <!-- Left rail stepper -->
+          <div class="req-rail" id="reqRail"></div>
+          <!-- Content area -->
+          <div class="req-content" id="reqContent"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentFlow = 'modal-sidebyside';
+  let currentScreen = 'entry';
+  let selectedPlan = null;
+  let currentStackSelection = 'plus';
+  let currentSplitSelection = 'plus';
+
+  const flowScreenMap = {
+    'modal-sidebyside': 'screenModalSideBySide',
+    'modal-stacked': 'screenModalStacked',
+    'fullpage-cards': 'screenFullCards',
+    'fullpage-split': 'screenFullSplit'
+  };
+
+  // Steps for each plan
+  const stepsData = {
+    essential: [
+      { label: 'Business representative', status: 'completed' },
+      { label: 'Verify your identity', status: 'active' },
+      { label: 'Business owners', status: 'pending' },
+      { label: 'Accept terms', status: 'pending' }
+    ],
+    plus: [
+      { label: 'Business representative', status: 'completed' },
+      { label: 'Verify your identity', status: 'active' },
+      { label: 'Business owners', status: 'pending' },
+      { label: 'Link your bank account', status: 'pending' },
+      { label: 'Accept terms', status: 'pending' }
+    ]
+  };
+
+  let currentActiveStep = 0; // index of active step
+
+  function switchFlow(flow) {
+    currentFlow = flow;
+    document.querySelectorAll('.control-option').forEach(o => o.classList.remove('active'));
+    event.target.closest('.control-option').classList.add('active');
+    updateStateDisplay();
+    resetFlow();
+  }
+
+  function resetFlow() {
+    selectedPlan = null;
+    currentScreen = 'entry';
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screenEntry').classList.add('active');
+    document.getElementById('deviceUrl').textContent = 'dashboard.stripe.com/verified';
+    updateStateDisplay();
+  }
+
+  function openPlanSelector() {
+    currentScreen = 'plan';
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const screenId = flowScreenMap[currentFlow];
+    document.getElementById(screenId).classList.add('active');
+    document.getElementById('deviceUrl').textContent = 'dashboard.stripe.com/verified/plans';
+    updateStateDisplay();
+  }
+
+  function selectPlan(plan) {
+    selectedPlan = plan;
+    currentScreen = 'requirements';
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screenRequirements').classList.add('active');
+    document.getElementById('deviceUrl').textContent = 'dashboard.stripe.com/verified/requirements';
+    renderRequirements(plan);
+    updateStateDisplay();
+  }
+
+  function goBackToPlan() {
+    openPlanSelector();
+  }
+
+  function stackSelect(el, plan) {
+    currentStackSelection = plan;
+    const parent = el.parentElement;
+    parent.querySelectorAll('.m-stack-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function stackSelectSplit(el, plan) {
+    currentSplitSelection = plan;
+    const container = el.parentElement;
+    container.querySelectorAll('.m-stack-option').forEach(o => {
+      o.classList.remove('selected');
+      o.style.borderColor = '#e3e8ee';
+      o.style.background = '#fff';
+      o.style.boxShadow = 'none';
+    });
+    el.classList.add('selected');
+    el.style.borderColor = '#635bff';
+    el.style.background = '#fafbff';
+    el.style.boxShadow = '0 0 0 1px #635bff';
+  }
+
+  function renderRequirements(plan) {
+    currentActiveStep = 0;
+    const steps = stepsData[plan];
+    // Reset all steps to initial state
+    steps.forEach((s, i) => {
+      if (i === 0) s.status = 'active';
+      else s.status = 'pending';
+    });
+    updateRequirementsUI(plan);
+  }
+
+  function updateRequirementsUI(plan) {
+    const steps = stepsData[plan];
+
+    // Render left rail
+    const railEl = document.getElementById('reqRail');
+    railEl.innerHTML = '';
+    steps.forEach((step, i) => {
+      railEl.innerHTML += `
+        <div class="req-step ${step.status}" onclick="goToStep(${i}, '${plan}')">
+          <div class="req-step-dot"></div>
+          <div class="req-step-label">${step.label}</div>
+        </div>`;
+    });
+
+    // Render content for active step
+    renderStepContent(plan);
+  }
+
+  function renderStepContent(plan) {
+    const contentEl = document.getElementById('reqContent');
+    const steps = stepsData[plan];
+    const activeLabel = steps[currentActiveStep].label;
+
+    let html = '';
+    if (currentActiveStep > 0) {
+      html += `<button class="req-content-back" onclick="goBackStep('${plan}')">&#8249; Back</button>`;
+    }
+
+    if (activeLabel === 'Business representative') {
+      html += `
+        <h1>Verify your personal details</h1>
+        <p class="req-desc">We will use this information to verify your identity and keep your account safe.</p>
+        <div class="req-user-row">
+          <div>
+            <div class="user-name">Alex Jones</div>
+            <div class="user-email">alexjones@rumble.com</div>
+          </div>
+          <a class="user-edit">Edit</a>
+        </div>
+        <div class="req-field-group">
+          <div class="req-field-label">Social Security Number (SSN) or Individual Taxpayer Identification Number (ITIN)</div>
+          <p class="req-field-desc">To verify your identity, we'll need to know your full SSN/ITIN. We are required to collect this information to satisfy regulatory obligations.</p>
+          <div class="req-input-group">
+            <div class="req-input-prefix">US <span class="prefix-chevron">&#9662;</span></div>
+            <input type="text" placeholder="123-45-6789" oninput="validateStep('${plan}')">
+          </div>
+        </div>
+        <button class="req-continue-btn" id="reqContinueBtn" disabled onclick="advanceStep('${plan}')">Continue</button>
+      `;
+    } else if (activeLabel === 'Verify your identity') {
+      html += `
+        <h1>Get your photo ID ready</h1>
+        <p class="req-desc">We need to make sure you're you. You'll take a photo with your ID using a mobile device. <a href="#">Learn more about identity verification.</a></p>
+        <div class="req-info-card">
+          <h3>Your ID must match these details</h3>
+          <div class="req-info-field">
+            <div class="field-label">Legal name</div>
+            <div class="field-value">Alex Jones</div>
+          </div>
+          <div class="req-info-field">
+            <div class="field-label">Date of birth</div>
+            <div class="field-value">Jan 1, 1980</div>
+          </div>
+        </div>
+        <button class="req-continue-btn" onclick="advanceStep('${plan}')">Continue</button>
+      `;
+    } else if (activeLabel === 'Business owners') {
+      html += `
+        <h1>Business owners</h1>
+        <p class="req-desc">Confirm the below details are correct. Due to regulatory guidelines, we're required to collect information on anyone who has significant ownership of your business. <a href="#">Learn more</a>.</p>
+        <div class="req-empty-state">
+          <p>Please add any individual who owns 25% or more of the company</p>
+        </div>
+        <button class="req-outline-btn">Add owner</button>
+        <button class="req-continue-btn" onclick="advanceStep('${plan}')">Continue with no owners</button>
+      `;
+    } else if (activeLabel === 'Link your bank account') {
+      html += `
+        <h1>Link your payout bank account</h1>
+        <div class="req-field-group">
+          <div class="req-field-label">Why we're asking for this</div>
+          <p class="req-field-desc">It gives us a snapshot of your business's financial health and confirms your eligibility. It doesn't change how you get paid.</p>
+        </div>
+        <div class="req-field-group">
+          <div class="req-field-label">Activity we'll review</div>
+          <ul class="req-bullet-list">
+            <li>Transactions from the last 3 months</li>
+            <li>Current and historical balances</li>
+          </ul>
+        </div>
+        <div class="req-option-card selected" onclick="selectBankOption(this)">
+          <div class="req-option-badge">Recommended</div>
+          <div class="req-option-row">
+            <span class="req-option-icon">&#127974;</span>
+            <div>
+              <div class="req-option-title">Link your payout bank account</div>
+              <div class="req-option-desc">Less likely we'll ask you for more financial information later</div>
+            </div>
+          </div>
+        </div>
+        <div class="req-option-card" onclick="selectBankOption(this)">
+          <div class="req-option-row">
+            <span class="req-option-icon">&#8593;</span>
+            <div>
+              <div class="req-option-title">Upload the last 3 months of bank statements</div>
+              <div class="req-option-desc">You may need to do this again in the future</div>
+            </div>
+          </div>
+        </div>
+        <button class="req-continue-btn" onclick="advanceStep('${plan}')" style="margin-top: 20px;">Continue</button>
+      `;
+    } else if (activeLabel === 'Accept terms') {
+      html += `
+        <h1>Accept terms</h1>
+        <p class="req-desc">Please review and accept the terms below to complete your application.</p>
+        <div class="req-checkbox-row">
+          <input type="checkbox" class="req-checkbox" id="terms1" onchange="validateStep('${plan}')">
+          <label class="req-checkbox-label" for="terms1">I confirm that the information provided is accurate and complete. I understand that Stripe may use this information to verify my identity and business.</label>
+        </div>
+        <div class="req-checkbox-row">
+          <input type="checkbox" class="req-checkbox" id="terms2" onchange="validateStep('${plan}')">
+          <label class="req-checkbox-label" for="terms2">I agree to the <a href="#">Stripe Verified Services Agreement</a> and acknowledge the <a href="#">Privacy Policy</a>.</label>
+        </div>
+        <button class="req-continue-btn" id="reqContinueBtn" disabled onclick="advanceStep('${plan}')" style="margin-top: 12px;">Submit application</button>
+      `;
+    }
+
+    contentEl.innerHTML = html;
+  }
+
+  function selectBankOption(el) {
+    document.querySelectorAll('.req-option-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function validateStep(plan) {
+    const steps = stepsData[plan];
+    const activeLabel = steps[currentActiveStep].label;
+    const btn = document.getElementById('reqContinueBtn');
+    if (!btn) return;
+
+    let valid = false;
+
+    if (activeLabel === 'Business representative') {
+      const input = document.querySelector('.req-input-group input');
+      valid = input && input.value.trim().length >= 5;
+    } else if (activeLabel === 'Link your bank account') {
+      const inputs = document.querySelectorAll('.req-input');
+      valid = Array.from(inputs).every(inp => inp.value.trim().length >= 5);
+    } else if (activeLabel === 'Accept terms') {
+      const checks = document.querySelectorAll('.req-checkbox');
+      valid = Array.from(checks).every(c => c.checked);
+    }
+
+    btn.disabled = !valid;
+  }
+
+  function goToStep(index, plan) {
+    const steps = stepsData[plan];
+    if (index >= steps.length) return;
+
+    // Mark previous steps as completed, current as active, rest as pending
+    steps.forEach((s, i) => {
+      if (i < index) s.status = 'completed';
+      else if (i === index) s.status = 'active';
+      else s.status = 'pending';
+    });
+    currentActiveStep = index;
+    updateRequirementsUI(plan);
+  }
+
+  function advanceStep(plan) {
+    const steps = stepsData[plan];
+    if (currentActiveStep < steps.length - 1) {
+      goToStep(currentActiveStep + 1, plan);
+    }
+  }
+
+  function goBackStep(plan) {
+    if (currentActiveStep > 0) {
+      goToStep(currentActiveStep - 1, plan);
+    } else {
+      goBackToPlan();
+    }
+  }
+
+  function updateStateDisplay() {
+    document.getElementById('stateScreen').textContent =
+      currentScreen === 'entry' ? 'Entry' :
+      currentScreen === 'plan' ? 'Plan selector' : 'Requirements';
+    document.getElementById('statePlan').textContent = selectedPlan ? (selectedPlan === 'plus' ? 'Verified Plus' : 'Verified Essential') : '—';
+    const layoutLabel = currentFlow.includes('modal') ? 'Modal' : 'Full page';
+    const variant = currentFlow.includes('sidebyside') || currentFlow.includes('cards') ? '(cards)' : currentFlow.includes('stacked') ? '(stacked)' : '(split)';
+    document.getElementById('stateLayout').textContent = `${layoutLabel} ${variant}`;
+  }
+</script>
+
+</body>
+</html>

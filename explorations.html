@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plan Selector — Layout Explorations</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f6f8fa; color: #1a1a2e; line-height: 1.5; }
+
+    /* Navigation between explorations */
+    .nav { position: fixed; top: 0; left: 0; right: 0; background: #fff; border-bottom: 1px solid #e3e8ee; padding: 12px 24px; z-index: 1000; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .nav-label { font-weight: 600; font-size: 13px; color: #697386; margin-right: 8px; }
+    .nav button { padding: 6px 14px; border: 1px solid #e3e8ee; border-radius: 6px; background: #fff; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.15s; }
+    .nav button:hover { background: #f6f8fa; border-color: #c1c9d2; }
+    .nav button.active { background: #635bff; color: #fff; border-color: #635bff; }
+
+    /* Keyframe animations */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scalePop {
+      from { transform: scale(0); }
+      to { transform: scale(1); }
+    }
+    @keyframes staggerIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Sections */
+    .exploration { display: none; padding: 80px 24px 60px; min-height: 100vh; }
+    .exploration.active { display: block; animation: fadeInUp 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+    .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: #697386; margin-bottom: 8px; }
+    .section-subtitle { font-size: 24px; font-weight: 600; color: #1a1a2e; margin-bottom: 32px; }
+
+    /* Shared plan card styles */
+    .plan-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+    .badge-essential { background: #e3e8ee; color: #425466; }
+    .badge-plus { background: #f0e6ff; color: #7c3aed; }
+
+    .check-icon { width: 16px; height: 16px; flex-shrink: 0; }
+    .benefit-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .benefit-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: #425466; transition: transform 0.15s ease; }
+    .benefit-list li:hover { transform: translateX(2px); }
+    .benefit-list .check { color: #635bff; font-weight: 700; font-size: 16px; line-height: 1.3; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .benefit-list li:hover .check { transform: scale(1.2); }
+
+    .plan-cta { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); border: none; width: 100%; }
+    .cta-primary { background: #635bff; color: #fff; }
+    .cta-primary:hover { background: #5851db; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(99, 91, 255, 0.3); }
+    .cta-primary:active { transform: translateY(0); box-shadow: none; }
+    .cta-secondary { background: #fff; color: #1a1a2e; border: 1px solid #e3e8ee; }
+    .cta-secondary:hover { background: #f6f8fa; border-color: #c1c9d2; transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); }
+    .cta-secondary:active { transform: translateY(0); box-shadow: none; }
+
+    /* ==========================================
+       EXPLORATION 1: Side-by-side cards (Full Page)
+       ========================================== */
+    .fp-sidebyside { max-width: 860px; margin: 0 auto; }
+    .fp-sidebyside .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .fp-sidebyside .card { background: #fff; border: 1px solid #e3e8ee; border-radius: 12px; padding: 28px; display: flex; flex-direction: column; transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.25s ease; }
+    .fp-sidebyside .card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08); }
+    .fp-sidebyside .card.recommended { border-color: #635bff; box-shadow: 0 0 0 1px #635bff; position: relative; }
+    .fp-sidebyside .card.recommended:hover { box-shadow: 0 0 0 1px #635bff, 0 12px 32px rgba(99, 91, 255, 0.15); }
+    .fp-sidebyside .card.recommended::before { content: 'Recommended'; position: absolute; top: -10px; left: 20px; background: #635bff; color: #fff; font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .fp-sidebyside .plan-name { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+    .fp-sidebyside .plan-desc { font-size: 13px; color: #697386; margin-bottom: 20px; }
+    .fp-sidebyside .benefit-list { margin-bottom: 24px; flex: 1; }
+    .fp-sidebyside .plan-price { font-size: 13px; color: #697386; margin-bottom: 16px; }
+    .fp-sidebyside .plan-price strong { font-size: 28px; color: #1a1a2e; font-weight: 700; }
+
+    /* ==========================================
+       EXPLORATION 2: Comparison table (Full Page)
+       ========================================== */
+    .fp-table { max-width: 720px; margin: 0 auto; }
+    .fp-table .comparison { background: #fff; border-radius: 12px; border: 1px solid #e3e8ee; overflow: hidden; animation: fadeUp 0.4s ease-out; }
+    .fp-table .comp-row { transition: background 0.15s ease; }
+    .fp-table .comp-row:hover { background: #f9fafb; }
+    .fp-table .comp-header { display: grid; grid-template-columns: 1.5fr 1fr 1fr; border-bottom: 1px solid #e3e8ee; }
+    .fp-table .comp-header-cell { padding: 20px 24px; text-align: center; }
+    .fp-table .comp-header-cell:first-child { text-align: left; }
+    .fp-table .comp-header-cell.highlight { background: #fafbff; }
+    .fp-table .comp-plan-name { font-size: 16px; font-weight: 600; }
+    .fp-table .comp-plan-price { font-size: 13px; color: #697386; margin-top: 2px; }
+    .fp-table .comp-row { display: grid; grid-template-columns: 1.5fr 1fr 1fr; border-bottom: 1px solid #f3f5f7; }
+    .fp-table .comp-row:last-child { border-bottom: none; }
+    .fp-table .comp-cell { padding: 14px 24px; font-size: 14px; display: flex; align-items: center; }
+    .fp-table .comp-cell:not(:first-child) { justify-content: center; }
+    .fp-table .comp-cell.highlight { background: #fafbff; }
+    .fp-table .comp-check { color: #635bff; font-size: 18px; font-weight: 700; }
+    .fp-table .comp-dash { color: #c1c9d2; font-size: 18px; }
+    .fp-table .comp-footer { display: grid; grid-template-columns: 1.5fr 1fr 1fr; padding: 16px 0; border-top: 1px solid #e3e8ee; }
+    .fp-table .comp-footer-cell { padding: 0 24px; display: flex; align-items: center; justify-content: center; }
+    .fp-table .comp-footer-cell:first-child { justify-content: flex-start; }
+
+    /* ==========================================
+       EXPLORATION 3: Horizontal hero (Full Page)
+       ========================================== */
+    .fp-hero { max-width: 1000px; margin: 0 auto; text-align: center; }
+    .fp-hero .hero-header { margin-bottom: 48px; }
+    .fp-hero .hero-header h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+    .fp-hero .hero-header p { font-size: 16px; color: #697386; }
+    .fp-hero .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08); transition: box-shadow 0.3s ease; }
+    .fp-hero .cards:hover { box-shadow: 0 8px 40px rgba(0,0,0,0.12); }
+    .fp-hero .card { padding: 40px 36px; text-align: left; transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+    .fp-hero .card-essential { background: #fff; }
+    .fp-hero .card-plus { background: linear-gradient(135deg, #1a1a2e 0%, #2d2b55 100%); color: #fff; }
+    .fp-hero .card-plus .plan-desc { color: rgba(255,255,255,0.7); }
+    .fp-hero .card-plus .benefit-list li { color: rgba(255,255,255,0.85); }
+    .fp-hero .card-plus .check { color: #a78bfa; }
+    .fp-hero .card-plus .cta-primary { background: #fff; color: #1a1a2e; }
+    .fp-hero .card-plus .cta-primary:hover { background: #f0f0f0; }
+    .fp-hero .plan-name { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .fp-hero .plan-desc { font-size: 14px; color: #697386; margin-bottom: 24px; }
+    .fp-hero .benefit-list { margin-bottom: 32px; }
+    .fp-hero .plan-price { margin-bottom: 20px; }
+    .fp-hero .plan-price strong { font-size: 32px; font-weight: 700; }
+    .fp-hero .plan-price span { font-size: 14px; color: #697386; }
+    .fp-hero .card-plus .plan-price span { color: rgba(255,255,255,0.6); }
+
+    /* ==========================================
+       EXPLORATION 4: Modal — Compact side-by-side
+       ========================================== */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 24px; }
+    .modal-overlay.visible { display: flex; }
+    .modal { background: #fff; border-radius: 16px; max-width: 640px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; }
+    .modal-close { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 8px; border: none; background: #f6f8fa; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #697386; transition: all 0.15s ease; }
+    .modal-close:hover { background: #e3e8ee; transform: scale(1.05); }
+    .modal-close:active { transform: scale(0.95); }
+
+    /* Modal 1 - side by side */
+    .modal-v1 .modal-header { padding: 28px 28px 0; }
+    .modal-v1 .modal-header h2 { font-size: 20px; font-weight: 700; }
+    .modal-v1 .modal-header p { font-size: 14px; color: #697386; margin-top: 4px; }
+    .modal-v1 .modal-body { padding: 24px 28px 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .modal-v1 .m-card { border: 1px solid #e3e8ee; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+    .modal-v1 .m-card:hover { border-color: #c1c9d2; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+    .modal-v1 .m-card.recommended { border-color: #635bff; background: #fafbff; }
+    .modal-v1 .m-card.recommended:hover { box-shadow: 0 4px 12px rgba(99, 91, 255, 0.12); }
+    .modal-v1 .m-plan-name { font-size: 16px; font-weight: 600; margin-bottom: 2px; }
+    .modal-v1 .m-plan-price { font-size: 12px; color: #697386; margin-bottom: 14px; }
+    .modal-v1 .benefit-list { margin-bottom: 16px; flex: 1; }
+    .modal-v1 .benefit-list li { font-size: 13px; }
+
+    /* ==========================================
+       EXPLORATION 5: Modal — Stacked with toggle
+       ========================================== */
+    .modal-v2 .modal-header { padding: 28px 28px 20px; text-align: center; }
+    .modal-v2 .modal-header h2 { font-size: 20px; font-weight: 700; }
+    .modal-v2 .modal-header p { font-size: 14px; color: #697386; margin-top: 4px; }
+    .modal-v2 .toggle-group { display: flex; background: #f6f8fa; border-radius: 8px; padding: 4px; margin: 0 28px; }
+    .modal-v2 .toggle-btn { flex: 1; padding: 10px 16px; border: none; background: transparent; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94); color: #697386; }
+    .modal-v2 .toggle-btn:hover:not(.active) { color: #425466; }
+    .modal-v2 .toggle-btn.active { background: #fff; color: #1a1a2e; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .modal-v2 .modal-body { padding: 24px 28px 28px; }
+    .modal-v2 .plan-detail { display: none; opacity: 0; transform: translateY(6px); }
+    .modal-v2 .plan-detail.active { display: block; animation: fadeInUp 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+    .modal-v2 .plan-detail .pd-price { font-size: 13px; color: #697386; margin-bottom: 20px; }
+    .modal-v2 .plan-detail .pd-price strong { font-size: 28px; color: #1a1a2e; }
+    .modal-v2 .benefit-list { margin-bottom: 24px; }
+
+    /* ==========================================
+       EXPLORATION 6: Modal — Single column stacked
+       ========================================== */
+    .modal-v3 .modal-header { padding: 28px 28px 0; }
+    .modal-v3 .modal-header h2 { font-size: 20px; font-weight: 700; }
+    .modal-v3 .modal-header p { font-size: 14px; color: #697386; margin-top: 4px; }
+    .modal-v3 .modal-body { padding: 20px 28px 28px; display: flex; flex-direction: column; gap: 12px; }
+    .modal-v3 .stack-card { border: 1px solid #e3e8ee; border-radius: 10px; padding: 20px; cursor: pointer; transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+    .modal-v3 .stack-card:hover { border-color: #c1c9d2; transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    .modal-v3 .stack-card.selected { border-color: #635bff; box-shadow: 0 0 0 1px #635bff, 0 4px 12px rgba(99, 91, 255, 0.1); background: #fafbff; transform: translateY(-1px); }
+    .modal-v3 .stack-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .modal-v3 .stack-name { font-size: 16px; font-weight: 600; }
+    .modal-v3 .stack-price { font-size: 13px; color: #697386; }
+    .modal-v3 .radio-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #c1c9d2; display: flex; align-items: center; justify-content: center; transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+    .modal-v3 .stack-card.selected .radio-dot { border-color: #635bff; }
+    .modal-v3 .stack-card.selected .radio-dot::after { content: ''; width: 10px; height: 10px; border-radius: 50%; background: #635bff; animation: scalePop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .modal-v3 .benefit-list li { font-size: 13px; }
+    .modal-v3 .modal-footer { padding: 0 28px 28px; }
+
+    /* Inline exploration for modals */
+    .modal-demo { background: #1a1a2e; border-radius: 16px; padding: 48px; display: flex; align-items: center; justify-content: center; min-height: 500px; margin-top: 24px; }
+    .modal-demo .modal { position: relative; animation: modalEntrance 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+    @keyframes modalEntrance {
+      from { opacity: 0; transform: scale(0.96) translateY(8px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* Nav button transition enhancement */
+    .nav button { transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+    .nav button:active { transform: scale(0.96); }
+
+    /* Staggered benefit list animation */
+    .exploration.active .benefit-list li { animation: staggerIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
+    .exploration.active .benefit-list li:nth-child(1) { animation-delay: 0.05s; }
+    .exploration.active .benefit-list li:nth-child(2) { animation-delay: 0.1s; }
+    .exploration.active .benefit-list li:nth-child(3) { animation-delay: 0.15s; }
+    .exploration.active .benefit-list li:nth-child(4) { animation-delay: 0.2s; }
+    .exploration.active .benefit-list li:nth-child(5) { animation-delay: 0.25s; }
+
+    /* Plan badge hover */
+    .plan-badge { transition: transform 0.2s ease; }
+    .plan-badge:hover { transform: scale(1.05); }
+  </style>
+</head>
+<body>
+
+<div class="nav">
+  <span class="nav-label">Explorations:</span>
+  <button class="active" onclick="show('exp1')">1. Side-by-side</button>
+  <button onclick="show('exp2')">2. Comparison table</button>
+  <button onclick="show('exp3')">3. Hero split</button>
+  <button onclick="show('exp4')">4. Modal: Cards</button>
+  <button onclick="show('exp5')">5. Modal: Toggle</button>
+  <button onclick="show('exp6')">6. Modal: Stacked</button>
+</div>
+
+<!-- EXPLORATION 1: Side-by-side cards -->
+<div class="exploration active" id="exp1">
+  <div class="fp-sidebyside">
+    <p class="section-title">Full Page — Layout 1</p>
+    <h2 class="section-subtitle">Side-by-side cards</h2>
+    <div class="cards">
+      <div class="card">
+        <span class="plan-badge badge-essential">Essential</span>
+        <h3 class="plan-name">Verified Essential</h3>
+        <p class="plan-desc">Core verification benefits to keep your business running smoothly.</p>
+        <div class="plan-price"><strong>$0</strong> /month</div>
+        <ul class="benefit-list">
+          <li><span class="check">&#10003;</span> Access to Instant payouts</li>
+          <li><span class="check">&#10003;</span> Stay ahead of compliance requirements</li>
+        </ul>
+        <button class="plan-cta cta-secondary">Get started</button>
+      </div>
+      <div class="card recommended">
+        <span class="plan-badge badge-plus">Plus</span>
+        <h3 class="plan-name">Verified Plus</h3>
+        <p class="plan-desc">Premium protection and higher limits for growing businesses.</p>
+        <div class="plan-price"><strong>$25</strong> /month</div>
+        <ul class="benefit-list">
+          <li><span class="check">&#10003;</span> Higher limits on instant payouts</li>
+          <li><span class="check">&#10003;</span> Stay ahead of compliance requirements</li>
+          <li><span class="check">&#10003;</span> Risk and compliance experts</li>
+          <li><span class="check">&#10003;</span> Verified Plus badge in Stripe profile</li>
+          <li><span class="check">&#10003;</span> Extended timelines and risk protections</li>
+        </ul>
+        <button class="plan-cta cta-primary">Upgrade to Plus</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EXPLORATION 2: Comparison table -->
+<div class="exploration" id="exp2">
+  <div class="fp-table">
+    <p class="section-title">Full Page — Layout 2</p>
+    <h2 class="section-subtitle">Feature comparison table</h2>
+    <div class="comparison">
+      <div class="comp-header">
+        <div class="comp-header-cell">
+          <span style="font-size:14px; color:#697386;">Compare plans</span>
+        </div>
+        <div class="comp-header-cell">
+          <div class="comp-plan-name">Essential</div>
+          <div class="comp-plan-price">Free</div>
+        </div>
+        <div class="comp-header-cell highlight">
+          <div class="comp-plan-name">Plus</div>
+          <div class="comp-plan-price">$25/mo</div>
+        </div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-cell">Access to Instant payouts</div>
+        <div class="comp-cell"><span class="comp-check">&#10003;</span></div>
+        <div class="comp-cell highlight"><span class="comp-check">&#10003;</span></div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-cell">Higher limits on instant payouts</div>
+        <div class="comp-cell"><span class="comp-dash">—</span></div>
+        <div class="comp-cell highlight"><span class="comp-check">&#10003;</span></div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-cell">Stay ahead of compliance requirements</div>
+        <div class="comp-cell"><span class="comp-check">&#10003;</span></div>
+        <div class="comp-cell highlight"><span class="comp-check">&#10003;</span></div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-cell">Risk and compliance experts</div>
+        <div class="comp-cell"><span class="comp-dash">—</span></div>
+        <div class="comp-cell highlight"><span class="comp-check">&#10003;</span></div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-cell">Verified Plus badge in Stripe profile</div>
+        <div class="comp-cell"><span class="comp-dash">—</span></div>
+        <div class="comp-cell highlight"><span class="comp-check">&#10003;</span></div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-cell">Extended timelines and risk protections</div>
+        <div class="comp-cell"><span class="comp-dash">—</span></div>
+        <div class="comp-cell highlight"><span class="comp-check">&#10003;</span></div>
+      </div>
+      <div class="comp-footer">
+        <div class="comp-footer-cell"></div>
+        <div class="comp-footer-cell"><button class="plan-cta cta-secondary" style="width:auto; padding:8px 16px; font-size:13px;">Get started</button></div>
+        <div class="comp-footer-cell"><button class="plan-cta cta-primary" style="width:auto; padding:8px 16px; font-size:13px;">Upgrade</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EXPLORATION 3: Hero split -->
+<div class="exploration" id="exp3">
+  <div class="fp-hero">
+    <div class="hero-header">
+      <p class="section-title">Full Page — Layout 3</p>
+      <h1>Choose your Verified plan</h1>
+      <p>Unlock verification benefits that protect and grow your business.</p>
+    </div>
+    <div class="cards">
+      <div class="card card-essential">
+        <span class="plan-badge badge-essential">Essential</span>
+        <h3 class="plan-name">Verified Essential</h3>
+        <p class="plan-desc">Core verification for every business.</p>
+        <div class="plan-price"><strong>Free</strong></div>
+        <ul class="benefit-list">
+          <li><span class="check">&#10003;</span> Access to Instant payouts</li>
+          <li><span class="check">&#10003;</span> Stay ahead of compliance requirements</li>
+        </ul>
+        <button class="plan-cta cta-secondary">Get started</button>
+      </div>
+      <div class="card card-plus">
+        <span class="plan-badge" style="background:rgba(255,255,255,0.15); color:#a78bfa;">Plus</span>
+        <h3 class="plan-name">Verified Plus</h3>
+        <p class="plan-desc">Premium protection for growing businesses.</p>
+        <div class="plan-price"><strong>$25</strong> <span>/month</span></div>
+        <ul class="benefit-list">
+          <li><span class="check">&#10003;</span> Higher limits on instant payouts</li>
+          <li><span class="check">&#10003;</span> Stay ahead of compliance requirements</li>
+          <li><span class="check">&#10003;</span> Risk and compliance experts</li>
+          <li><span class="check">&#10003;</span> Verified Plus badge in Stripe profile</li>
+          <li><span class="check">&#10003;</span> Extended timelines and risk protections</li>
+        </ul>
+        <button class="plan-cta cta-primary">Upgrade to Plus</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EXPLORATION 4: Modal — Side-by-side cards -->
+<div class="exploration" id="exp4">
+  <p class="section-title">Modal — Layout 1</p>
+  <h2 class="section-subtitle">Compact side-by-side cards</h2>
+  <div class="modal-demo">
+    <div class="modal modal-v1">
+      <button class="modal-close">&times;</button>
+      <div class="modal-header">
+        <h2>Choose your plan</h2>
+        <p>Select the verification tier that fits your needs.</p>
+      </div>
+      <div class="modal-body">
+        <div class="m-card">
+          <div class="m-plan-name">Verified Essential</div>
+          <div class="m-plan-price">Free</div>
+          <ul class="benefit-list">
+            <li><span class="check">&#10003;</span> Access to Instant payouts</li>
+            <li><span class="check">&#10003;</span> Stay ahead of compliance requirements</li>
+          </ul>
+          <button class="plan-cta cta-secondary" style="font-size:13px; padding:8px 16px;">Select Essential</button>
+        </div>
+        <div class="m-card recommended">
+          <div class="m-plan-name">Verified Plus</div>
+          <div class="m-plan-price">$25/month</div>
+          <ul class="benefit-list">
+            <li><span class="check">&#10003;</span> Higher limits on instant payouts</li>
+            <li><span class="check">&#10003;</span> Stay ahead of compliance requirements</li>
+            <li><span class="check">&#10003;</span> Risk and compliance experts</li>
+            <li><span class="check">&#10003;</span> Verified Plus badge in Stripe profile</li>
+            <li><span class="check">&#10003;</span> Extended timelines and risk protections</li>
+          </ul>
+          <button class="plan-cta cta-primary" style="font-size:13px; padding:8px 16px;">Select Plus</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EXPLORATION 5: Modal — Toggle between plans -->
+<div class="exploration" id="exp5">
+  <p class="section-title">Modal — Layout 2</p>
+  <h2 class="section-subtitle">Toggle between plans</h2>
+  <div class="modal-demo">
+    <div class="modal modal-v2">
+      <button class="modal-close">&times;</button>
+      <div class="modal-header">
+        <h2>Choose your plan</h2>
+        <p>Select the verification tier that fits your needs.</p>
+      </div>
+      <div class="toggle-group">
+        <button class="toggle-btn active" onclick="togglePlan('essential')">Verified Essential</button>
+        <button class="toggle-btn" onclick="togglePlan('plus')">Verified Plus</button>
+      </div>
+      <div class="modal-body">
+        <div class="plan-detail active" id="plan-essential">
+          <div class="pd-price"><strong>Free</strong></div>
+          <ul class="benefit-list">
+            <li><span class="check">&#10003;</span> Access to Instant payouts</li>
+            <li><span class="check">&#10003;</span> Stay ahead of compliance requirements</li>
+          </ul>
+          <button class="plan-cta cta-secondary">Get started with Essential</button>
+        </div>
+        <div class="plan-detail" id="plan-plus">
+          <div class="pd-price"><strong>$25</strong> /month</div>
+          <ul class="benefit-list">
+            <li><span class="check">&#10003;</span> Higher limits on instant payouts</li>
+            <li><span class="check">&#10003;</span> Stay ahead of compliance requirements</li>
+            <li><span class="check">&#10003;</span> Risk and compliance experts</li>
+            <li><span class="check">&#10003;</span> Verified Plus badge in Stripe profile</li>
+            <li><span class="check">&#10003;</span> Extended timelines and risk protections</li>
+          </ul>
+          <button class="plan-cta cta-primary">Upgrade to Plus</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EXPLORATION 6: Modal — Stacked radio cards -->
+<div class="exploration" id="exp6">
+  <p class="section-title">Modal — Layout 3</p>
+  <h2 class="section-subtitle">Stacked selection cards</h2>
+  <div class="modal-demo">
+    <div class="modal modal-v3">
+      <button class="modal-close">&times;</button>
+      <div class="modal-header">
+        <h2>Choose your plan</h2>
+        <p>Select the verification tier that fits your needs.</p>
+      </div>
+      <div class="modal-body">
+        <div class="stack-card" onclick="selectStack(this)">
+          <div class="stack-top">
+            <div>
+              <div class="stack-name">Verified Essential</div>
+              <div class="stack-price">Free</div>
+            </div>
+            <div class="radio-dot"></div>
+          </div>
+          <ul class="benefit-list">
+            <li><span class="check">&#10003;</span> Access to Instant payouts</li>
+            <li><span class="check">&#10003;</span> Stay ahead of compliance requirements</li>
+          </ul>
+        </div>
+        <div class="stack-card selected" onclick="selectStack(this)">
+          <div class="stack-top">
+            <div>
+              <div class="stack-name">Verified Plus</div>
+              <div class="stack-price">$25/month</div>
+            </div>
+            <div class="radio-dot"></div>
+          </div>
+          <ul class="benefit-list">
+            <li><span class="check">&#10003;</span> Higher limits on instant payouts</li>
+            <li><span class="check">&#10003;</span> Stay ahead of compliance requirements</li>
+            <li><span class="check">&#10003;</span> Risk and compliance experts</li>
+            <li><span class="check">&#10003;</span> Verified Plus badge in Stripe profile</li>
+            <li><span class="check">&#10003;</span> Extended timelines and risk protections</li>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="plan-cta cta-primary">Continue</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function show(id) {
+    document.querySelectorAll('.exploration').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav button').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  function togglePlan(plan) {
+    document.querySelectorAll('.modal-v2 .toggle-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.modal-v2 .plan-detail').forEach(el => el.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('plan-' + plan).classList.add('active');
+  }
+
+  function selectStack(card) {
+    document.querySelectorAll('.modal-v3 .stack-card').forEach(el => el.classList.remove('selected'));
+    card.classList.add('selected');
+  }
+</script>
+
+</body>
+</html>
