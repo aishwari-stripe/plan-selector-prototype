@@ -146,6 +146,8 @@
     .m-plan-card:hover { border-color: #c1c9d2; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .m-plan-card.highlighted { border-color: #635bff; background: #fafbff; }
     .m-plan-card.highlighted:hover { box-shadow: 0 4px 16px rgba(99,91,255,0.12); }
+    .m-plan-card.selectable { cursor: pointer; }
+    .m-plan-card.selectable.selected { border-color: #635bff; background: #fafbff; box-shadow: 0 0 0 1.5px #635bff; }
     .m-plan-card-badge { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #697386; margin-bottom: 6px; }
     .m-plan-card.highlighted .m-plan-card-badge { color: #635bff; }
     .m-plan-card-name { font-size: 17px; font-weight: 600; margin-bottom: 2px; }
@@ -191,6 +193,9 @@
     .fp-card.featured { border-color: #635bff; position: relative; }
     .fp-card.featured::before { content: 'Recommended'; position: absolute; top: -9px; left: 20px; background: #635bff; color: #fff; font-size: 10px; font-weight: 600; padding: 2px 10px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
     .fp-card.featured:hover { box-shadow: 0 10px 30px rgba(99,91,255,0.12); }
+    .fp-card.selectable { cursor: pointer; }
+    .fp-card.selectable.selected { border-color: #635bff; box-shadow: 0 0 0 1.5px #635bff; }
+    .fp-card.selectable.selected.featured::before { display: none; }
     .fp-card-tier { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #697386; margin-bottom: 6px; }
     .fp-card.featured .fp-card-tier { color: #635bff; }
     .fp-card-name { font-size: 20px; font-weight: 700; margin-bottom: 2px; }
@@ -586,7 +591,7 @@
             <p>Select the verification tier that fits your needs.</p>
           </div>
           <div class="modal-cards-body">
-            <div class="m-plan-card">
+            <div class="m-plan-card selectable" onclick="selectCardSideBySide(this, 'essential', 'modal')">
               <div class="m-plan-card-badge">Essential</div>
               <div class="m-plan-card-name">Verified Essential</div>
               <div class="m-plan-card-price">Free</div>
@@ -594,9 +599,8 @@
                 <li><span class="chk">&#10003;</span> Access to Instant payouts</li>
                 <li><span class="chk">&#10003;</span> Stay ahead of compliance requirements</li>
               </ul>
-              <button class="select-btn btn-outline" onclick="selectPlan('essential')">Select Essential</button>
             </div>
-            <div class="m-plan-card highlighted">
+            <div class="m-plan-card selectable selected" onclick="selectCardSideBySide(this, 'plus', 'modal')">
               <div class="m-plan-card-badge">Plus</div>
               <div class="m-plan-card-name">Verified Plus</div>
               <div class="m-plan-card-price">$25/month</div>
@@ -607,8 +611,10 @@
                 <li><span class="chk">&#10003;</span> Verified Plus badge</li>
                 <li><span class="chk">&#10003;</span> Extended timelines and risk protections</li>
               </ul>
-              <button class="select-btn btn-primary" onclick="selectPlan('plus')">Select Plus</button>
             </div>
+          </div>
+          <div class="modal-stacked-footer">
+            <button onclick="selectPlan(currentSideBySideSelection || 'plus')">Continue</button>
           </div>
         </div>
       </div>
@@ -666,7 +672,7 @@
             <p>Unlock verification benefits that protect and grow your business.</p>
           </div>
           <div class="fullpage-cards">
-            <div class="fp-card">
+            <div class="fp-card selectable" onclick="selectCardSideBySide(this, 'essential', 'fullpage')">
               <div class="fp-card-tier">Essential</div>
               <div class="fp-card-name">Verified Essential</div>
               <div class="fp-card-price">Free</div>
@@ -674,9 +680,8 @@
                 <li><span class="chk">&#10003;</span> Access to Instant payouts</li>
                 <li><span class="chk">&#10003;</span> Stay ahead of compliance requirements</li>
               </ul>
-              <button class="select-btn btn-outline" onclick="selectPlan('essential')">Get started</button>
             </div>
-            <div class="fp-card featured">
+            <div class="fp-card selectable selected" onclick="selectCardSideBySide(this, 'plus', 'fullpage')">
               <div class="fp-card-tier">Plus</div>
               <div class="fp-card-name">Verified Plus</div>
               <div class="fp-card-price">$25/month</div>
@@ -687,9 +692,9 @@
                 <li><span class="chk">&#10003;</span> Verified Plus badge in Stripe profile</li>
                 <li><span class="chk">&#10003;</span> Extended timelines and risk protections</li>
               </ul>
-              <button class="select-btn btn-primary" onclick="selectPlan('plus')">Upgrade to Plus</button>
             </div>
           </div>
+          <button style="width: 100%; max-width: 780px; margin-top: 20px; padding: 14px; border-radius: 10px; border: none; background: #635bff; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;" onclick="selectPlan(currentSideBySideSelection || 'plus')">Continue</button>
         </div>
       </div>
 
@@ -1152,7 +1157,15 @@
     updateStateDisplay();
   }
 
+  let currentSideBySideSelection = 'plus';
   let currentModalSplitSelection = 'plus';
+
+  function selectCardSideBySide(el, plan, context) {
+    currentSideBySideSelection = plan;
+    const container = el.parentElement;
+    container.querySelectorAll('.m-plan-card.selectable, .fp-card.selectable').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+  }
 
   function stackSelectModal(el, plan) {
     currentModalSplitSelection = plan;
