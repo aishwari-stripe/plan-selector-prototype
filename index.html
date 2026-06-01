@@ -224,6 +224,8 @@
     .compare-btn-primary { background: #635bff; color: #fff; border: none; }
     .compare-btn-primary:hover { background: #5851db; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(99,91,255,0.3); }
     .compare-check { width: 22px; height: 22px; border-radius: 50%; background: #ede9fe; color: #635bff; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+    .compare-row-footer { border-top: 1px solid #e3e8ee; border-bottom: none; }
+    .compare-row-footer .compare-cell { padding: 18px; }
     .compare-dash { color: #c1c9d2; font-size: 16px; }
     .compare-note { font-size: 12px; color: #425466; font-weight: 500; }
 
@@ -1011,12 +1013,10 @@
             <div class="compare-cell compare-cell-plan">
               <div class="compare-plan-tier">Verified Essential</div>
               <div class="compare-plan-tagline">The basics, verified</div>
-              <button class="compare-btn compare-btn-outline" onclick="selectPlanFromCompare('essential')">Get Essential</button>
             </div>
             <div class="compare-cell compare-cell-plan compare-cell-plus">
               <div class="compare-plan-tier plus">Verified Plus</div>
               <div class="compare-plan-tagline">Higher limits & expert support</div>
-              <button class="compare-btn compare-btn-primary" onclick="selectPlanFromCompare('plus')">Get Plus</button>
             </div>
           </div>
           <div class="compare-row">
@@ -1043,6 +1043,11 @@
             <div class="compare-cell compare-cell-label">Extended timelines and risk protections</div>
             <div class="compare-cell compare-cell-value"><span class="compare-dash">&mdash;</span></div>
             <div class="compare-cell compare-cell-value compare-cell-plus"><span class="compare-check">&#10003;</span></div>
+          </div>
+          <div class="compare-row compare-row-footer">
+            <div class="compare-cell compare-cell-label"></div>
+            <div class="compare-cell compare-cell-value"><button class="compare-btn compare-btn-outline" onclick="selectPlanFromCompare('essential')">Get Essential</button></div>
+            <div class="compare-cell compare-cell-value compare-cell-plus"><button class="compare-btn compare-btn-primary" onclick="selectPlanFromCompare('plus')">Get Plus</button></div>
           </div>
         </div>
       </div>
