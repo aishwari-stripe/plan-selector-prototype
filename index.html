@@ -1022,10 +1022,11 @@
     }
 
     if (activeLabel === 'Choose your plan') {
-      // Re-show the quiz/compare flow
-      if (currentQuizFlow === 'priorities') { renderQuizPriorities(); return; }
-      else if (currentQuizFlow === 'persona') { renderQuizPersona(); return; }
-      else { renderCompareFlow(); return; }
+      // Re-show the correct plan selector for the active flow
+      if (currentFlow === 'fullpage-quiz-priorities') { renderQuizPriorities(); return; }
+      else if (currentFlow === 'fullpage-quiz-persona') { renderQuizPersona(); return; }
+      else if (currentFlow === 'fullpage-compare') { renderCompareFlow(); return; }
+      return;
     } else if (activeLabel === 'Business representative') {
       html += `
         <h1>Verify your personal details</h1>
@@ -1250,9 +1251,9 @@
 
   function handleQuizRailClick(index, label) {
     if (label === 'Choose your plan') {
-      // Re-show the quiz question
-      if (currentQuizFlow === 'priorities') renderQuizPriorities();
-      else if (currentQuizFlow === 'persona') renderQuizPersona();
+      if (currentFlow === 'fullpage-quiz-priorities') renderQuizPriorities();
+      else if (currentFlow === 'fullpage-quiz-persona') renderQuizPersona();
+      else if (currentFlow === 'fullpage-compare') renderCompareFlow();
     }
   }
 
