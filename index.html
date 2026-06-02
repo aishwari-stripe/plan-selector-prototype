@@ -365,6 +365,37 @@
     .req-option-title { font-size: 14px; font-weight: 600; color: #1a1a2e; margin-bottom: 2px; }
     .req-option-desc { font-size: 13px; color: #697386; }
 
+    /* Quiz tile grid (multi-select) */
+    .quiz-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 480px; margin-bottom: 20px; }
+    .quiz-tile { border: 1.5px solid #e3e8ee; border-radius: 10px; padding: 14px 16px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 10px; }
+    .quiz-tile:hover { border-color: #c1c9d2; background: #fafbff; }
+    .quiz-tile.selected { border-color: #635bff; background: #f8f6ff; box-shadow: 0 0 0 1px #635bff; }
+    .quiz-tile-icon { font-size: 18px; flex-shrink: 0; }
+    .quiz-tile-label { font-size: 13px; font-weight: 500; color: #1a1a2e; }
+    .quiz-tile-check { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid #d1d5db; margin-left: auto; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; font-size: 10px; color: transparent; }
+    .quiz-tile.selected .quiz-tile-check { background: #635bff; border-color: #635bff; color: #fff; }
+
+    /* Quiz persona cards */
+    .quiz-persona { max-width: 480px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px; }
+    .quiz-persona-card { border: 1.5px solid #e3e8ee; border-radius: 12px; padding: 18px 20px; cursor: pointer; transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94); display: flex; align-items: flex-start; gap: 14px; }
+    .quiz-persona-card:hover { border-color: #c1c9d2; }
+    .quiz-persona-card.selected { border-color: #635bff; background: #fafbff; box-shadow: 0 0 0 1.5px #635bff; }
+    .quiz-persona-radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #d1d5db; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; transition: all 0.2s ease; }
+    .quiz-persona-card.selected .quiz-persona-radio { border-color: #635bff; }
+    .quiz-persona-card.selected .quiz-persona-radio::after { content: ''; width: 9px; height: 9px; border-radius: 50%; background: #635bff; }
+    .quiz-persona-title { font-size: 15px; font-weight: 600; color: #1a1a2e; margin-bottom: 3px; }
+    .quiz-persona-desc { font-size: 13px; color: #697386; line-height: 1.4; }
+
+    /* Recommendation card */
+    .quiz-rec-card { border: 1.5px solid #635bff; border-radius: 14px; padding: 24px; max-width: 480px; margin-bottom: 20px; background: #fafbff; }
+    .quiz-rec-tier { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #635bff; margin-bottom: 6px; }
+    .quiz-rec-name { font-size: 20px; font-weight: 700; color: #1a1a2e; margin-bottom: 14px; }
+    .quiz-rec-benefits { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .quiz-rec-benefits li { display: flex; align-items: center; gap: 9px; font-size: 14px; color: #425466; }
+    .quiz-rec-benefits .chk { color: #635bff; font-weight: 700; font-size: 14px; }
+    .quiz-rec-switch { display: block; text-align: center; margin-top: 12px; font-size: 13px; color: #697386; cursor: pointer; border: none; background: none; width: 100%; max-width: 480px; transition: color 0.15s; }
+    .quiz-rec-switch:hover { color: #635bff; }
+
     /* Checkbox row for terms */
     .req-checkbox-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 16px; max-width: 480px; }
     .req-checkbox { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid #d1d5db; flex-shrink: 0; margin-top: 2px; cursor: pointer; appearance: none; -webkit-appearance: none; transition: all 0.15s; }
@@ -413,6 +444,14 @@
     <div class="control-option" onclick="switchFlow('fullpage-split')">
       <div class="control-option-name">Split with illustration</div>
       <div class="control-option-desc">Illustration left, selection right</div>
+    </div>
+    <div class="control-option" onclick="switchFlow('fullpage-quiz-priorities')">
+      <div class="control-option-name">Quiz: What matters most?</div>
+      <div class="control-option-desc">Multi-select priorities, then recommend</div>
+    </div>
+    <div class="control-option" onclick="switchFlow('fullpage-quiz-persona')">
+      <div class="control-option-name">Quiz: Which describes you?</div>
+      <div class="control-option-desc">Persona-based, then recommend</div>
     </div>
   </div>
 
@@ -832,7 +871,9 @@
     'modal-split': 'screenModalSplit',
     'fullpage-cards': 'screenFullCards',
     'fullpage-compare': 'screenRequirements',
-    'fullpage-split': 'screenFullSplit'
+    'fullpage-split': 'screenFullSplit',
+    'fullpage-quiz-priorities': 'screenRequirements',
+    'fullpage-quiz-persona': 'screenRequirements'
   };
 
   // Steps for each plan
@@ -876,11 +917,20 @@
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
 
     if (currentFlow === 'fullpage-compare') {
-      // Go directly to requirements screen with plan selection as first step
       currentScreen = 'requirements';
       document.getElementById('screenRequirements').classList.add('active');
       document.getElementById('deviceUrl').textContent = 'dashboard.stripe.com/verified/plans';
       renderCompareFlow();
+    } else if (currentFlow === 'fullpage-quiz-priorities') {
+      currentScreen = 'requirements';
+      document.getElementById('screenRequirements').classList.add('active');
+      document.getElementById('deviceUrl').textContent = 'dashboard.stripe.com/verified/plans';
+      renderQuizPriorities();
+    } else if (currentFlow === 'fullpage-quiz-persona') {
+      currentScreen = 'requirements';
+      document.getElementById('screenRequirements').classList.add('active');
+      document.getElementById('deviceUrl').textContent = 'dashboard.stripe.com/verified/plans';
+      renderQuizPersona();
     } else {
       const screenId = flowScreenMap[currentFlow];
       document.getElementById(screenId).classList.add('active');
@@ -1155,6 +1205,159 @@
     currentActiveStep = 1;
     updateRequirementsUI(plan);
     updateStateDisplay();
+  }
+
+  // ---- Quiz flow: "What matters most?" ----
+  let quizSelectedTiles = [];
+
+  function renderQuizRail() {
+    const steps = [
+      { label: 'Choose your plan', status: 'active' },
+      { label: 'Business representative', status: 'pending' },
+      { label: 'Verify your identity', status: 'pending' },
+      { label: 'Business owners', status: 'pending' },
+      { label: 'Accept terms', status: 'pending' }
+    ];
+    const railEl = document.getElementById('reqRail');
+    railEl.innerHTML = '';
+    steps.forEach(step => {
+      railEl.innerHTML += `
+        <div class="req-step ${step.status}">
+          <div class="req-step-dot"></div>
+          <div class="req-step-label">${step.label}</div>
+        </div>`;
+    });
+  }
+
+  function renderQuizPriorities() {
+    quizSelectedTiles = [];
+    renderQuizRail();
+    const contentEl = document.getElementById('reqContent');
+    contentEl.innerHTML = `
+      <h1>What matters most to your business?</h1>
+      <p class="req-desc">Select up to 3 priorities. We'll recommend the right plan for you.</p>
+      <div class="quiz-tiles">
+        <div class="quiz-tile" onclick="toggleQuizTile(this, 'funds')">
+          <span class="quiz-tile-icon">&#9889;</span>
+          <span class="quiz-tile-label">Faster access to funds</span>
+          <span class="quiz-tile-check">&#10003;</span>
+        </div>
+        <div class="quiz-tile" onclick="toggleQuizTile(this, 'limits')">
+          <span class="quiz-tile-icon">&#8593;</span>
+          <span class="quiz-tile-label">Higher payout limits</span>
+          <span class="quiz-tile-check">&#10003;</span>
+        </div>
+        <div class="quiz-tile" onclick="toggleQuizTile(this, 'experts')">
+          <span class="quiz-tile-icon">&#9873;</span>
+          <span class="quiz-tile-label">Risk & compliance experts</span>
+          <span class="quiz-tile-check">&#10003;</span>
+        </div>
+        <div class="quiz-tile" onclick="toggleQuizTile(this, 'badge')">
+          <span class="quiz-tile-icon">&#10004;</span>
+          <span class="quiz-tile-label">Stand out to customers</span>
+          <span class="quiz-tile-check">&#10003;</span>
+        </div>
+        <div class="quiz-tile" onclick="toggleQuizTile(this, 'protection')">
+          <span class="quiz-tile-icon">&#128274;</span>
+          <span class="quiz-tile-label">Extended protections</span>
+          <span class="quiz-tile-check">&#10003;</span>
+        </div>
+      </div>
+      <button class="req-continue-btn" id="quizContinueBtn" disabled onclick="submitQuizPriorities()">Continue</button>
+    `;
+  }
+
+  function toggleQuizTile(el, value) {
+    if (el.classList.contains('selected')) {
+      el.classList.remove('selected');
+      quizSelectedTiles = quizSelectedTiles.filter(v => v !== value);
+    } else if (quizSelectedTiles.length < 3) {
+      el.classList.add('selected');
+      quizSelectedTiles.push(value);
+    }
+    document.getElementById('quizContinueBtn').disabled = quizSelectedTiles.length === 0;
+  }
+
+  function submitQuizPriorities() {
+    // If only "funds" selected → Essential, otherwise Plus
+    const plan = (quizSelectedTiles.length === 1 && quizSelectedTiles[0] === 'funds') ? 'essential' : 'plus';
+    renderQuizRecommendation(plan, 'priorities');
+  }
+
+  // ---- Quiz flow: "Which describes you?" ----
+  let quizPersonaSelection = null;
+
+  function renderQuizPersona() {
+    quizPersonaSelection = null;
+    renderQuizRail();
+    const contentEl = document.getElementById('reqContent');
+    contentEl.innerHTML = `
+      <h1>Which best describes your business?</h1>
+      <p class="req-desc">This helps us recommend the right verification tier.</p>
+      <div class="quiz-persona">
+        <div class="quiz-persona-card" onclick="selectPersona(this, 'essential')">
+          <div class="quiz-persona-radio"></div>
+          <div>
+            <div class="quiz-persona-title">Getting started</div>
+            <div class="quiz-persona-desc">I want the essentials to stay compliant and access instant payouts</div>
+          </div>
+        </div>
+        <div class="quiz-persona-card" onclick="selectPersona(this, 'plus')">
+          <div class="quiz-persona-radio"></div>
+          <div>
+            <div class="quiz-persona-title">Growing & scaling</div>
+            <div class="quiz-persona-desc">I need higher limits, expert support, and full protection</div>
+          </div>
+        </div>
+      </div>
+      <button class="req-continue-btn" id="quizPersonaContinueBtn" disabled onclick="submitQuizPersona()">Continue</button>
+    `;
+  }
+
+  function selectPersona(el, plan) {
+    quizPersonaSelection = plan;
+    document.querySelectorAll('.quiz-persona-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('quizPersonaContinueBtn').disabled = false;
+  }
+
+  function submitQuizPersona() {
+    renderQuizRecommendation(quizPersonaSelection, 'persona');
+  }
+
+  // ---- Shared recommendation screen ----
+  function renderQuizRecommendation(plan, flowType) {
+    const benefits = {
+      essential: [
+        'Access to Instant payouts',
+        'Stay ahead of compliance requirements'
+      ],
+      plus: [
+        'Higher limits on instant payouts',
+        'Stay ahead of compliance requirements',
+        'Risk and compliance experts',
+        'Verified Plus badge in Stripe profile',
+        'Extended timelines and risk protections'
+      ]
+    };
+    const planName = plan === 'plus' ? 'Verified Plus' : 'Verified Essential';
+    const otherPlan = plan === 'plus' ? 'essential' : 'plus';
+    const otherName = plan === 'plus' ? 'Verified Essential' : 'Verified Plus';
+
+    const contentEl = document.getElementById('reqContent');
+    contentEl.innerHTML = `
+      <button class="req-content-back" onclick="${flowType === 'priorities' ? 'renderQuizPriorities()' : 'renderQuizPersona()'}">&#8249; Back</button>
+      <h1>We recommend ${planName}</h1>
+      <p class="req-desc">Based on your priorities, here's the best fit for your business.</p>
+      <div class="quiz-rec-card">
+        <div class="quiz-rec-tier">${planName}</div>
+        <ul class="quiz-rec-benefits">
+          ${benefits[plan].map(b => `<li><span class="chk">&#10003;</span> ${b}</li>`).join('')}
+        </ul>
+      </div>
+      <button class="req-continue-btn" onclick="selectPlanFromCompare('${plan}')">Continue with ${planName}</button>
+      <button class="quiz-rec-switch" onclick="renderQuizRecommendation('${otherPlan}', '${flowType}')">Switch to ${otherName} instead</button>
+    `;
   }
 
   let currentSideBySideSelection = 'plus';
