@@ -11,31 +11,32 @@
     /* ==========================================
        CONTROL PANEL
        ========================================== */
-    .control-panel { width: 280px; background: #1a1a2e; color: #fff; padding: 24px 20px; display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0; border-right: 1px solid rgba(255,255,255,0.06); }
-    .control-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .control-panel { width: 280px; background: #f8f9fb; color: #1a1a2e; padding: 24px 20px; display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0; border-right: 1px solid #e8ecf0; }
+    .control-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid #e8ecf0; }
     .control-logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #635bff, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-    .control-logo-text { font-size: 14px; font-weight: 600; }
-    .control-logo-text span { font-size: 11px; font-weight: 400; color: rgba(255,255,255,0.5); display: block; }
+    .control-logo-text { font-size: 14px; font-weight: 600; color: #1a1a2e; }
+    .control-logo-text span { font-size: 11px; font-weight: 400; color: #697386; display: block; }
 
     .control-section { margin-bottom: 24px; }
-    .control-section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.35); margin-bottom: 10px; }
+    .control-section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #9ca3af; margin-bottom: 10px; }
 
     .control-option { padding: 10px 12px; border-radius: 8px; cursor: pointer; transition: all 0.15s ease; margin-bottom: 4px; border: 1px solid transparent; }
-    .control-option:hover { background: rgba(255,255,255,0.04); }
-    .control-option.active { background: rgba(99, 91, 255, 0.12); border-color: rgba(99, 91, 255, 0.3); }
-    .control-option-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
-    .control-option-desc { font-size: 11px; color: rgba(255,255,255,0.4); }
-    .control-option.active .control-option-desc { color: rgba(255,255,255,0.6); }
+    .control-option:hover { background: #f0f2f5; }
+    .control-option.active { background: #ede9fe; border-color: rgba(99, 91, 255, 0.2); }
+    .control-option-name { font-size: 13px; font-weight: 500; color: #1a1a2e; margin-bottom: 2px; }
+    .control-option-desc { font-size: 11px; color: #9ca3af; }
+    .control-option.active .control-option-name { color: #4c1d95; }
+    .control-option.active .control-option-desc { color: #7c3aed; }
 
-    .control-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 16px 0; }
+    .control-divider { height: 1px; background: #e8ecf0; margin: 16px 0; }
 
-    .control-state { padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); }
-    .control-state-title { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
+    .control-state { padding: 12px; background: #fff; border-radius: 8px; border: 1px solid #e8ecf0; }
+    .control-state-title { font-size: 11px; font-weight: 600; color: #697386; margin-bottom: 8px; }
     .control-state-row { display: flex; align-items: center; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
-    .control-state-row .label { color: rgba(255,255,255,0.4); }
-    .control-state-row .value { color: rgba(255,255,255,0.8); font-weight: 500; }
-    .control-reset { margin-top: 12px; width: 100%; padding: 7px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.12); background: transparent; color: rgba(255,255,255,0.6); font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s ease; }
-    .control-reset:hover { background: rgba(255,255,255,0.06); color: #fff; }
+    .control-state-row .label { color: #9ca3af; }
+    .control-state-row .value { color: #1a1a2e; font-weight: 500; }
+    .control-reset { margin-top: 12px; width: 100%; padding: 7px; border-radius: 6px; border: 1px solid #e3e8ee; background: #fff; color: #697386; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s ease; }
+    .control-reset:hover { background: #f0f2f5; color: #1a1a2e; }
 
     /* ==========================================
        PROTOTYPE VIEWPORT
@@ -477,24 +478,8 @@
   </div>
 
   <div class="control-section">
-    <div class="control-section-title">Modal Layouts</div>
-    <div class="control-option active" onclick="switchFlow('modal-sidebyside')">
-      <div class="control-option-name">Side-by-side cards</div>
-      <div class="control-option-desc">Two cards in a modal dialog</div>
-    </div>
-    <div class="control-option" onclick="switchFlow('modal-stacked')">
-      <div class="control-option-name">Stacked selection</div>
-      <div class="control-option-desc">Radio-style vertical cards in modal</div>
-    </div>
-    <div class="control-option" onclick="switchFlow('modal-split')">
-      <div class="control-option-name">Split with illustration</div>
-      <div class="control-option-desc">Cards left, illustration right in modal</div>
-    </div>
-  </div>
-
-  <div class="control-section">
     <div class="control-section-title">Full Page Layouts</div>
-    <div class="control-option" onclick="switchFlow('fullpage-cards')">
+    <div class="control-option active" onclick="switchFlow('fullpage-cards')">
       <div class="control-option-name">Side-by-side cards</div>
       <div class="control-option-desc">Full page with two plan cards</div>
     </div>
@@ -521,6 +506,22 @@
     <div class="control-option" onclick="switchFlow('fullpage-quiz-persona')">
       <div class="control-option-name">Quiz: Which describes you?</div>
       <div class="control-option-desc">Persona-based, then recommend</div>
+    </div>
+  </div>
+
+  <div class="control-section">
+    <div class="control-section-title">Modal Layouts</div>
+    <div class="control-option" onclick="switchFlow('modal-sidebyside')">
+      <div class="control-option-name">Side-by-side cards</div>
+      <div class="control-option-desc">Two cards in a modal dialog</div>
+    </div>
+    <div class="control-option" onclick="switchFlow('modal-stacked')">
+      <div class="control-option-name">Stacked selection</div>
+      <div class="control-option-desc">Radio-style vertical cards in modal</div>
+    </div>
+    <div class="control-option" onclick="switchFlow('modal-split')">
+      <div class="control-option-name">Split with illustration</div>
+      <div class="control-option-desc">Cards left, illustration right in modal</div>
     </div>
   </div>
 
@@ -877,7 +878,7 @@
 </div>
 
 <script>
-  let currentFlow = 'modal-sidebyside';
+  let currentFlow = 'fullpage-cards';
   let currentScreen = 'entry';
   let selectedPlan = null;
   let currentStackSelection = 'plus';
