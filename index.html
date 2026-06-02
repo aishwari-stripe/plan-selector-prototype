@@ -255,6 +255,52 @@
     .split-plan-benefits li { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #425466; }
     .split-plan-benefits .chk { color: #635bff; font-weight: 700; font-size: 13px; }
 
+    /* Illustration split layout (inside req-content) */
+    .illust-split { display: flex; gap: 0; height: 100%; margin: -32px -48px; }
+    .illust-content { flex: 1; padding: 32px 32px; display: flex; flex-direction: column; justify-content: center; overflow-y: auto; }
+    .illust-content h1 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+    .illust-content .req-desc { margin-bottom: 20px; }
+    .illust-right { flex: 0.9; background: #f5f3ff; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; border-left: 1px solid #ede9fe; }
+
+    /* Badge illustration states */
+    .illust-badge-shape { width: 120px; height: 140px; position: relative; display: flex; align-items: center; justify-content: center; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+    .illust-badge-shape::before { content: ''; position: absolute; inset: 0; clip-path: polygon(50% 0%, 100% 15%, 100% 70%, 50% 100%, 0% 70%, 0% 15%); transition: all 0.4s ease; }
+    .illust-badge-shape.filled::before { background: linear-gradient(135deg, #635bff, #8b5cf6); box-shadow: 0 12px 40px rgba(99,91,255,0.3); }
+    .illust-badge-shape.empty::before { border: 2.5px dashed #c4b5fd; background: transparent; }
+    .illust-badge-shape .badge-check { position: relative; z-index: 1; font-size: 36px; color: #fff; transition: all 0.3s ease; opacity: 0; transform: scale(0.5); }
+    .illust-badge-shape.filled .badge-check { opacity: 1; transform: scale(1); }
+    .illust-badge-shape.empty .badge-check { opacity: 0.3; color: #c4b5fd; transform: scale(0.8); }
+    .illust-badge-caption { text-align: center; margin-top: 16px; font-size: 12px; color: #697386; font-weight: 500; transition: all 0.3s ease; }
+
+    /* Value props illustration */
+    .illust-value-list { display: flex; flex-direction: column; gap: 12px; width: 200px; }
+    .illust-value-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); animation: fadeInUp 0.3s ease both; font-size: 12px; color: #425466; font-weight: 500; }
+    .illust-value-item .iv-icon { width: 28px; height: 28px; border-radius: 6px; background: #ede9fe; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+    .illust-value-item:nth-child(1) { animation-delay: 0s; }
+    .illust-value-item:nth-child(2) { animation-delay: 0.06s; }
+    .illust-value-item:nth-child(3) { animation-delay: 0.12s; }
+    .illust-value-item:nth-child(4) { animation-delay: 0.18s; }
+    .illust-value-item:nth-child(5) { animation-delay: 0.24s; }
+
+    /* Toggle for value props */
+    .illust-toggle { display: flex; background: #f0f2f5; border-radius: 8px; padding: 3px; margin-bottom: 20px; max-width: 300px; }
+    .illust-toggle-btn { flex: 1; padding: 8px 14px; border: none; background: transparent; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; color: #697386; }
+    .illust-toggle-btn.active { background: #fff; color: #1a1a2e; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+
+    /* Value props benefit list (left side) */
+    .illust-benefits-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+    .illust-benefits-list li { display: flex; align-items: center; gap: 9px; font-size: 14px; color: #425466; }
+    .illust-benefits-list .chk { color: #635bff; font-weight: 700; font-size: 14px; }
+
+    /* Profile illustration */
+    .illust-profile-card { width: 220px; background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); text-align: center; transition: all 0.3s ease; }
+    .illust-profile-avatar { width: 48px; height: 48px; border-radius: 50%; background: #e3e8ee; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #697386; }
+    .illust-profile-name { font-size: 14px; font-weight: 600; color: #1a1a2e; margin-bottom: 2px; }
+    .illust-profile-email { font-size: 11px; color: #697386; margin-bottom: 12px; }
+    .illust-profile-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; transition: all 0.3s ease; }
+    .illust-profile-badge.verified { background: #ede9fe; color: #635bff; }
+    .illust-profile-badge.empty { background: #f0f2f5; color: #9ca3af; }
+
     .compare-row-footer { border-top: 1px solid #e3e8ee; border-bottom: none; }
     .compare-row-footer .compare-cell { padding: 18px; }
     .compare-dash { color: #c1c9d2; font-size: 16px; }
@@ -456,9 +502,17 @@
       <div class="control-option-name">Comparison table</div>
       <div class="control-option-desc">Feature grid with plan columns</div>
     </div>
-    <div class="control-option" onclick="switchFlow('fullpage-split')">
-      <div class="control-option-name">Split with illustration</div>
-      <div class="control-option-desc">Illustration left, selection right</div>
+    <div class="control-option" onclick="switchFlow('fullpage-illust-badge')">
+      <div class="control-option-name">Illustration: Badge</div>
+      <div class="control-option-desc">Shield fills when Plus is selected</div>
+    </div>
+    <div class="control-option" onclick="switchFlow('fullpage-illust-value')">
+      <div class="control-option-name">Illustration: Value props</div>
+      <div class="control-option-desc">Toggle view with animated benefits</div>
+    </div>
+    <div class="control-option" onclick="switchFlow('fullpage-illust-profile')">
+      <div class="control-option-name">Illustration: Profile</div>
+      <div class="control-option-desc">Stripe profile with/without badge</div>
     </div>
     <div class="control-option" onclick="switchFlow('fullpage-quiz-priorities')">
       <div class="control-option-name">Quiz: What matters most?</div>
@@ -752,57 +806,6 @@
         </div>
       </div>
 
-      <!-- SCREEN: Full Page — Split illustration (content left, illustration right) -->
-      <div class="screen screen-plan-full" id="screenFullSplit" style="flex-direction: row; padding: 0;">
-        <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 48px; background: #fff;">
-          <div style="max-width: 400px; width: 100%; animation: fadeInUp 0.4s ease;">
-            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 24px;">
-              <div style="width: 24px; height: 6px; border-radius: 3px; background: #635bff;"></div>
-              <div style="width: 6px; height: 6px; border-radius: 50%; background: #e3e8ee;"></div>
-              <div style="width: 6px; height: 6px; border-radius: 50%; background: #e3e8ee;"></div>
-            </div>
-            <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">Select your plan</h2>
-            <p style="font-size: 14px; color: #697386; margin-bottom: 24px;">Choose the tier that fits your business. Upgrade anytime.</p>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-              <div class="split-plan-option" onclick="stackSelectSplit(this, 'essential')">
-                <div class="split-plan-option-top">
-                  <div><div class="split-plan-option-name">Verified Essential</div><div class="split-plan-option-price">Free</div></div>
-                  <div class="split-plan-radio"></div>
-                </div>
-                <ul class="split-plan-benefits">
-                  <li><span class="chk">&#10003;</span> Access to Instant payouts</li>
-                  <li><span class="chk">&#10003;</span> Stay ahead of compliance</li>
-                </ul>
-              </div>
-              <div class="split-plan-option selected" onclick="stackSelectSplit(this, 'plus')">
-                <div class="split-plan-option-top">
-                  <div><div class="split-plan-option-name">Verified Plus</div><div class="split-plan-option-price">$25/month</div></div>
-                  <div class="split-plan-radio"></div>
-                </div>
-                <ul class="split-plan-benefits">
-                  <li><span class="chk">&#10003;</span> Higher limits on instant payouts</li>
-                  <li><span class="chk">&#10003;</span> Risk and compliance experts</li>
-                  <li><span class="chk">&#10003;</span> Verified Plus badge</li>
-                  <li><span class="chk">&#10003;</span> Extended protections</li>
-                </ul>
-              </div>
-            </div>
-            <button style="width: 100%; margin-top: 20px; padding: 14px; border-radius: 10px; border: none; background: #635bff; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;" onclick="selectPlan(currentSplitSelection || 'plus')">Continue &rarr;</button>
-          </div>
-        </div>
-        <div class="split-illust-panel">
-          <div class="split-illust-orb split-illust-orb-1"></div>
-          <div class="split-illust-orb split-illust-orb-2"></div>
-          <div class="split-illust-scene">
-            <div class="split-illust-shield">
-              <div class="split-illust-shield-inner"></div>
-              <span class="split-illust-shield-check">&#10003;</span>
-            </div>
-            <p class="split-illust-caption">Protection for your business</p>
-          </div>
-        </div>
-      </div>
-
       <!-- SCREEN: Modal — Split illustration -->
       <div class="screen screen-plan-modal" id="screenModalSplit">
         <div class="modal-shell" style="max-width: 780px; display: flex; flex-direction: row; overflow: hidden; padding: 0;">
@@ -886,7 +889,9 @@
     'modal-split': 'screenModalSplit',
     'fullpage-cards': 'screenFullCards',
     'fullpage-compare': 'screenRequirements',
-    'fullpage-split': 'screenFullSplit',
+    'fullpage-illust-badge': 'screenRequirements',
+    'fullpage-illust-value': 'screenRequirements',
+    'fullpage-illust-profile': 'screenRequirements',
     'fullpage-quiz-priorities': 'screenRequirements',
     'fullpage-quiz-persona': 'screenRequirements'
   };
@@ -936,6 +941,13 @@
       document.getElementById('screenRequirements').classList.add('active');
       document.getElementById('deviceUrl').textContent = 'dashboard.stripe.com/verified/plans';
       renderCompareFlow();
+    } else if (currentFlow === 'fullpage-illust-badge' || currentFlow === 'fullpage-illust-value' || currentFlow === 'fullpage-illust-profile') {
+      currentScreen = 'requirements';
+      document.getElementById('screenRequirements').classList.add('active');
+      document.getElementById('deviceUrl').textContent = 'dashboard.stripe.com/verified/plans';
+      if (currentFlow === 'fullpage-illust-badge') renderIllustBadge();
+      else if (currentFlow === 'fullpage-illust-value') renderIllustValue();
+      else renderIllustProfile();
     } else if (currentFlow === 'fullpage-quiz-priorities') {
       currentScreen = 'requirements';
       document.getElementById('screenRequirements').classList.add('active');
@@ -1026,6 +1038,9 @@
       if (currentFlow === 'fullpage-quiz-priorities') { renderQuizPriorities(); return; }
       else if (currentFlow === 'fullpage-quiz-persona') { renderQuizPersona(); return; }
       else if (currentFlow === 'fullpage-compare') { renderCompareFlow(); return; }
+      else if (currentFlow === 'fullpage-illust-badge') { renderIllustBadge(); return; }
+      else if (currentFlow === 'fullpage-illust-value') { renderIllustValue(); return; }
+      else if (currentFlow === 'fullpage-illust-profile') { renderIllustProfile(); return; }
       return;
     } else if (activeLabel === 'Business representative') {
       html += `
@@ -1205,6 +1220,206 @@
     `;
   }
 
+  // ---- Illustration flows ----
+  let illustSelection = 'plus';
+
+  function renderIllustBadge() {
+    illustSelection = 'plus';
+    renderQuizRail('plus');
+    const contentEl = document.getElementById('reqContent');
+    contentEl.innerHTML = `
+      <div class="illust-split">
+        <div class="illust-content">
+          <h1>Select your plan</h1>
+          <p class="req-desc">Choose the tier that fits your business. Upgrade anytime.</p>
+          <div style="display: flex; flex-direction: column; gap: 10px; max-width: 340px;">
+            <div class="split-plan-option" onclick="selectIllustPlan(this, 'essential', 'badge')">
+              <div class="split-plan-option-top">
+                <div><div class="split-plan-option-name">Verified Essential</div><div class="split-plan-option-price">Free</div></div>
+                <div class="split-plan-radio"></div>
+              </div>
+              <ul class="split-plan-benefits">
+                <li><span class="chk">&#10003;</span> Access to Instant payouts</li>
+                <li><span class="chk">&#10003;</span> Stay ahead of compliance</li>
+              </ul>
+            </div>
+            <div class="split-plan-option selected" onclick="selectIllustPlan(this, 'plus', 'badge')">
+              <div class="split-plan-option-top">
+                <div><div class="split-plan-option-name">Verified Plus</div><div class="split-plan-option-price">$99/month</div></div>
+                <div class="split-plan-radio"></div>
+              </div>
+              <ul class="split-plan-benefits">
+                <li><span class="chk">&#10003;</span> Higher limits on instant payouts</li>
+                <li><span class="chk">&#10003;</span> Risk & compliance experts</li>
+                <li><span class="chk">&#10003;</span> Verified Plus badge</li>
+                <li><span class="chk">&#10003;</span> Extended protections</li>
+              </ul>
+            </div>
+          </div>
+          <button class="req-continue-btn" style="max-width: 340px; margin-top: 16px;" onclick="selectPlanFromCompare(illustSelection)">Continue</button>
+        </div>
+        <div class="illust-right" id="illustPanel">
+          <div style="text-align: center;">
+            <div class="illust-badge-shape filled" id="illustBadgeShape">
+              <span class="badge-check">&#10003;</span>
+            </div>
+            <div class="illust-badge-caption" id="illustBadgeCaption">Verified & protected</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderIllustValue() {
+    illustSelection = 'plus';
+    renderQuizRail('plus');
+    const contentEl = document.getElementById('reqContent');
+    contentEl.innerHTML = `
+      <div class="illust-split">
+        <div class="illust-content">
+          <h1>Select your plan</h1>
+          <p class="req-desc">Choose the tier that fits your business. Upgrade anytime.</p>
+          <div class="illust-toggle">
+            <button class="illust-toggle-btn" onclick="toggleIllustValue('essential')">Essential</button>
+            <button class="illust-toggle-btn active" onclick="toggleIllustValue('plus')">Plus</button>
+          </div>
+          <ul class="illust-benefits-list" id="illustValueBenefits">
+            <li><span class="chk">&#10003;</span> Higher limits on instant payouts</li>
+            <li><span class="chk">&#10003;</span> Stay ahead of compliance requirements</li>
+            <li><span class="chk">&#10003;</span> Risk and compliance experts</li>
+            <li><span class="chk">&#10003;</span> Verified Plus badge in Stripe profile</li>
+            <li><span class="chk">&#10003;</span> Extended timelines and risk protections</li>
+          </ul>
+          <button class="req-continue-btn" style="max-width: 340px;" onclick="selectPlanFromCompare(illustSelection)">Continue</button>
+        </div>
+        <div class="illust-right" id="illustPanel">
+          <div class="illust-value-list" id="illustValueList">
+            <div class="illust-value-item"><span class="iv-icon">&#8593;</span> Higher limits</div>
+            <div class="illust-value-item"><span class="iv-icon">&#9873;</span> Compliance</div>
+            <div class="illust-value-item"><span class="iv-icon">&#128101;</span> Expert support</div>
+            <div class="illust-value-item"><span class="iv-icon">&#10004;</span> Badge</div>
+            <div class="illust-value-item"><span class="iv-icon">&#128274;</span> Protections</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderIllustProfile() {
+    illustSelection = 'plus';
+    renderQuizRail('plus');
+    const contentEl = document.getElementById('reqContent');
+    contentEl.innerHTML = `
+      <div class="illust-split">
+        <div class="illust-content">
+          <h1>Select your plan</h1>
+          <p class="req-desc">Choose the tier that fits your business. Upgrade anytime.</p>
+          <div style="display: flex; flex-direction: column; gap: 10px; max-width: 340px;">
+            <div class="split-plan-option" onclick="selectIllustPlan(this, 'essential', 'profile')">
+              <div class="split-plan-option-top">
+                <div><div class="split-plan-option-name">Verified Essential</div><div class="split-plan-option-price">Free</div></div>
+                <div class="split-plan-radio"></div>
+              </div>
+              <ul class="split-plan-benefits">
+                <li><span class="chk">&#10003;</span> Access to Instant payouts</li>
+                <li><span class="chk">&#10003;</span> Stay ahead of compliance</li>
+              </ul>
+            </div>
+            <div class="split-plan-option selected" onclick="selectIllustPlan(this, 'plus', 'profile')">
+              <div class="split-plan-option-top">
+                <div><div class="split-plan-option-name">Verified Plus</div><div class="split-plan-option-price">$99/month</div></div>
+                <div class="split-plan-radio"></div>
+              </div>
+              <ul class="split-plan-benefits">
+                <li><span class="chk">&#10003;</span> Higher limits on instant payouts</li>
+                <li><span class="chk">&#10003;</span> Risk & compliance experts</li>
+                <li><span class="chk">&#10003;</span> Verified Plus badge</li>
+                <li><span class="chk">&#10003;</span> Extended protections</li>
+              </ul>
+            </div>
+          </div>
+          <button class="req-continue-btn" style="max-width: 340px; margin-top: 16px;" onclick="selectPlanFromCompare(illustSelection)">Continue</button>
+        </div>
+        <div class="illust-right" id="illustPanel">
+          <div class="illust-profile-card" id="illustProfileCard">
+            <div class="illust-profile-avatar">A</div>
+            <div class="illust-profile-name">Acme Corp</div>
+            <div class="illust-profile-email">alex@acmecorp.com</div>
+            <div class="illust-profile-badge verified" id="illustProfileBadge">&#10003; Verified Plus</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function selectIllustPlan(el, plan, variant) {
+    illustSelection = plan;
+    const container = el.parentElement;
+    container.querySelectorAll('.split-plan-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    renderQuizRail(plan);
+    updateIllustration(plan, variant);
+  }
+
+  function toggleIllustValue(plan) {
+    illustSelection = plan;
+    document.querySelectorAll('.illust-toggle-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    renderQuizRail(plan);
+
+    const benefitsEl = document.getElementById('illustValueBenefits');
+    const listEl = document.getElementById('illustValueList');
+
+    if (plan === 'essential') {
+      benefitsEl.innerHTML = `
+        <li><span class="chk">&#10003;</span> Access to Instant payouts</li>
+        <li><span class="chk">&#10003;</span> Stay ahead of compliance requirements</li>
+      `;
+      listEl.innerHTML = `
+        <div class="illust-value-item"><span class="iv-icon">&#9889;</span> Instant payouts</div>
+        <div class="illust-value-item"><span class="iv-icon">&#9873;</span> Compliance</div>
+      `;
+    } else {
+      benefitsEl.innerHTML = `
+        <li><span class="chk">&#10003;</span> Higher limits on instant payouts</li>
+        <li><span class="chk">&#10003;</span> Stay ahead of compliance requirements</li>
+        <li><span class="chk">&#10003;</span> Risk and compliance experts</li>
+        <li><span class="chk">&#10003;</span> Verified Plus badge in Stripe profile</li>
+        <li><span class="chk">&#10003;</span> Extended timelines and risk protections</li>
+      `;
+      listEl.innerHTML = `
+        <div class="illust-value-item"><span class="iv-icon">&#8593;</span> Higher limits</div>
+        <div class="illust-value-item"><span class="iv-icon">&#9873;</span> Compliance</div>
+        <div class="illust-value-item"><span class="iv-icon">&#128101;</span> Expert support</div>
+        <div class="illust-value-item"><span class="iv-icon">&#10004;</span> Badge</div>
+        <div class="illust-value-item"><span class="iv-icon">&#128274;</span> Protections</div>
+      `;
+    }
+  }
+
+  function updateIllustration(plan, variant) {
+    if (variant === 'badge') {
+      const shape = document.getElementById('illustBadgeShape');
+      const caption = document.getElementById('illustBadgeCaption');
+      if (plan === 'plus') {
+        shape.className = 'illust-badge-shape filled';
+        caption.textContent = 'Verified & protected';
+      } else {
+        shape.className = 'illust-badge-shape empty';
+        caption.textContent = 'Basic verification';
+      }
+    } else if (variant === 'profile') {
+      const badge = document.getElementById('illustProfileBadge');
+      if (plan === 'plus') {
+        badge.className = 'illust-profile-badge verified';
+        badge.innerHTML = '&#10003; Verified Plus';
+      } else {
+        badge.className = 'illust-profile-badge empty';
+        badge.innerHTML = 'No badge';
+      }
+    }
+  }
+
   function selectPlanFromCompare(plan) {
     selectedPlan = plan;
     currentScreen = 'requirements';
@@ -1254,6 +1469,9 @@
       if (currentFlow === 'fullpage-quiz-priorities') renderQuizPriorities();
       else if (currentFlow === 'fullpage-quiz-persona') renderQuizPersona();
       else if (currentFlow === 'fullpage-compare') renderCompareFlow();
+      else if (currentFlow === 'fullpage-illust-badge') renderIllustBadge();
+      else if (currentFlow === 'fullpage-illust-value') renderIllustValue();
+      else if (currentFlow === 'fullpage-illust-profile') renderIllustProfile();
     }
   }
 
