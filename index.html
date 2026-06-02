@@ -1006,7 +1006,12 @@
       html += `<button class="req-content-back" onclick="goBackStep('${plan}')">&#8249; Back</button>`;
     }
 
-    if (activeLabel === 'Business representative') {
+    if (activeLabel === 'Choose your plan') {
+      // Re-show the quiz/compare flow
+      if (currentQuizFlow === 'priorities') { renderQuizPriorities(); return; }
+      else if (currentQuizFlow === 'persona') { renderQuizPersona(); return; }
+      else { renderCompareFlow(); return; }
+    } else if (activeLabel === 'Business representative') {
       html += `
         <h1>Verify your personal details</h1>
         <p class="req-desc">We will use this information to verify your identity and keep your account safe.</p>
@@ -1209,29 +1214,37 @@
 
   // ---- Quiz flow: "What matters most?" ----
   let quizSelectedTiles = [];
+  let currentQuizFlow = null; // track which quiz variant is active
 
-  function renderQuizRail() {
-    const steps = [
-      { label: 'Choose your plan', status: 'active' },
-      { label: 'Business representative', status: 'pending' },
-      { label: 'Verify your identity', status: 'pending' },
-      { label: 'Business owners', status: 'pending' },
-      { label: 'Accept terms', status: 'pending' }
-    ];
+  function renderQuizRail(previewPlan) {
+    const baseSteps = previewPlan === 'plus'
+      ? ['Choose your plan', 'Business representative', 'Verify your identity', 'Business owners', 'Link your bank account', 'Accept terms']
+      : ['Choose your plan', 'Business representative', 'Verify your identity', 'Business owners', 'Accept terms'];
+
     const railEl = document.getElementById('reqRail');
     railEl.innerHTML = '';
-    steps.forEach(step => {
+    baseSteps.forEach((label, i) => {
+      const status = i === 0 ? 'active' : 'pending';
       railEl.innerHTML += `
-        <div class="req-step ${step.status}">
+        <div class="req-step ${status}" onclick="handleQuizRailClick(${i}, '${label}')">
           <div class="req-step-dot"></div>
-          <div class="req-step-label">${step.label}</div>
+          <div class="req-step-label">${label}</div>
         </div>`;
     });
   }
 
+  function handleQuizRailClick(index, label) {
+    if (label === 'Choose your plan') {
+      // Re-show the quiz question
+      if (currentQuizFlow === 'priorities') renderQuizPriorities();
+      else if (currentQuizFlow === 'persona') renderQuizPersona();
+    }
+  }
+
   function renderQuizPriorities() {
     quizSelectedTiles = [];
-    renderQuizRail();
+    currentQuizFlow = 'priorities';
+    renderQuizRail(null);
     const contentEl = document.getElementById('reqContent');
     contentEl.innerHTML = `
       <h1>What matters most to your business?</h1>
@@ -1289,7 +1302,8 @@
 
   function renderQuizPersona() {
     quizPersonaSelection = null;
-    renderQuizRail();
+    currentQuizFlow = 'persona';
+    renderQuizRail(null);
     const contentEl = document.getElementById('reqContent');
     contentEl.innerHTML = `
       <h1>Which best describes your business?</h1>
@@ -1327,6 +1341,9 @@
 
   // ---- Shared recommendation screen ----
   function renderQuizRecommendation(plan, flowType) {
+    // Update rail to show the steps for this plan
+    renderQuizRail(plan);
+
     const benefits = {
       essential: [
         'Access to Instant payouts',
