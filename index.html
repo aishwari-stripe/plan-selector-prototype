@@ -313,7 +313,7 @@
 
     .compare-row-footer { border-top: 1px solid #e3e8ee; border-bottom: none; }
     .compare-row-footer .compare-cell { padding: 18px; }
-    .compare-select-btn { padding: 8px 20px; border-radius: 8px; border: 1px solid #d1d5db; background: #fff; font-size: 13px; font-weight: 500; color: #1a1a2e; cursor: pointer; transition: all 0.2s ease; }
+    .compare-select-btn { padding: 8px 0; width: 120px; border-radius: 8px; border: 1px solid #d1d5db; background: #fff; font-size: 13px; font-weight: 500; color: #1a1a2e; cursor: pointer; transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease; text-align: center; }
     .compare-select-btn:hover { border-color: #9ca3af; background: #f9fafb; }
     .compare-select-btn.selected { background: #635bff; border-color: #635bff; color: #fff; }
     .compare-dash { color: #c1c9d2; font-size: 16px; }
@@ -1417,7 +1417,7 @@
             <div class="compare-cell compare-cell-value compare-cell-plus"><button class="compare-select-btn" id="compareSelectPlus" onclick="selectCompareRadio('plus')">Select plan</button></div>
           </div>
         </div>
-        <button class="req-continue-btn" id="compareContinueBtn" disabled style="margin-top: 16px; max-width: 100%;" onclick="selectPlanFromCompare(compareRadioSelection)">Continue</button>
+        <button class="req-continue-btn" id="compareContinueBtn" disabled style="margin-top: 16px; max-width: 200px;" onclick="selectPlanFromCompare(compareRadioSelection)">Continue</button>
       </div>
     `;
   }
