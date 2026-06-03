@@ -773,40 +773,6 @@
         </div>
       </div>
 
-      <!-- SCREEN: Full Page — Side by side -->
-      <div class="screen screen-plan-full" id="screenFullCards">
-        <div class="fullpage-plan">
-          <div class="fullpage-plan-header">
-            <h1>Choose your Verified plan</h1>
-            <p>Unlock verification benefits that protect and grow your business.</p>
-          </div>
-          <div class="fullpage-cards">
-            <div class="fp-card selectable" onclick="selectCardSideBySide(this, 'essential', 'fullpage')">
-              <div class="fp-card-tier">Essential</div>
-              <div class="fp-card-name">Verified Essential</div>
-              <div class="fp-card-price">Free</div>
-              <ul class="benefits">
-                <li><span class="chk">&#10003;</span> Access to Instant payouts</li>
-                <li><span class="chk">&#10003;</span> Stay ahead of compliance requirements</li>
-              </ul>
-            </div>
-            <div class="fp-card selectable selected" onclick="selectCardSideBySide(this, 'plus', 'fullpage')">
-              <div class="fp-card-tier">Plus</div>
-              <div class="fp-card-name">Verified Plus</div>
-              <div class="fp-card-price">$25/month</div>
-              <ul class="benefits">
-                <li><span class="chk">&#10003;</span> Higher limits on instant payouts</li>
-                <li><span class="chk">&#10003;</span> Stay ahead of compliance requirements</li>
-                <li><span class="chk">&#10003;</span> Risk and compliance experts</li>
-                <li><span class="chk">&#10003;</span> Verified Plus badge in Stripe profile</li>
-                <li><span class="chk">&#10003;</span> Extended timelines and risk protections</li>
-              </ul>
-            </div>
-          </div>
-          <button style="width: 100%; max-width: 780px; margin-top: 20px; padding: 14px; border-radius: 10px; border: none; background: #635bff; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;" onclick="selectPlan(currentSideBySideSelection || 'plus')">Continue</button>
-        </div>
-      </div>
-
       <!-- SCREEN: Modal — Split illustration -->
       <div class="screen screen-plan-modal" id="screenModalSplit">
         <div class="modal-shell" style="max-width: 780px; display: flex; flex-direction: row; overflow: hidden; padding: 0;">
@@ -888,7 +854,7 @@
     'modal-sidebyside': 'screenModalSideBySide',
     'modal-stacked': 'screenModalStacked',
     'modal-split': 'screenModalSplit',
-    'fullpage-cards': 'screenFullCards',
+    'fullpage-cards': 'screenRequirements',
     'fullpage-compare': 'screenRequirements',
     'fullpage-illust-badge': 'screenRequirements',
     'fullpage-illust-value': 'screenRequirements',
@@ -937,7 +903,12 @@
     currentScreen = 'plan';
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
 
-    if (currentFlow === 'fullpage-compare') {
+    if (currentFlow === 'fullpage-cards') {
+      currentScreen = 'requirements';
+      document.getElementById('screenRequirements').classList.add('active');
+      document.getElementById('deviceUrl').textContent = 'dashboard.stripe.com/verified';
+      renderFullpageCardsFlow();
+    } else if (currentFlow === 'fullpage-compare') {
       currentScreen = 'requirements';
       document.getElementById('screenRequirements').classList.add('active');
       document.getElementById('deviceUrl').textContent = 'dashboard.stripe.com/verified/plans';
@@ -1034,9 +1005,12 @@
       html += `<button class="req-content-back" onclick="goBackStep('${plan}')">&#8249; Back</button>`;
     }
 
-    if (activeLabel === 'Choose your plan') {
+    if (activeLabel === 'Learn about Verified') {
+      renderFullpageCardsFlow(); return;
+    } else if (activeLabel === 'Choose your plan') {
       // Re-show the correct plan selector for the active flow
-      if (currentFlow === 'fullpage-quiz-priorities') { renderQuizPriorities(); return; }
+      if (currentFlow === 'fullpage-cards') { renderFullpageCardsChoose(); return; }
+      else if (currentFlow === 'fullpage-quiz-priorities') { renderQuizPriorities(); return; }
       else if (currentFlow === 'fullpage-quiz-persona') { renderQuizPersona(); return; }
       else if (currentFlow === 'fullpage-compare') { renderCompareFlow(); return; }
       else if (currentFlow === 'fullpage-illust-badge') { renderIllustBadge(); return; }
@@ -1143,6 +1117,123 @@
     }
 
     contentEl.innerHTML = html;
+  }
+
+  // ---- Full page cards flow (with Learn about Verified intro) ----
+  let fullpageCardsSelection = 'plus';
+
+  function renderFullpageCardsFlow() {
+    currentActiveStep = 0;
+    const steps = [
+      { label: 'Learn about Verified', status: 'active' },
+      { label: 'Choose your plan', status: 'pending' },
+      { label: 'Business representative', status: 'pending' },
+      { label: 'Verify your identity', status: 'pending' },
+      { label: 'Business owners', status: 'pending' },
+      { label: 'Accept terms', status: 'pending' }
+    ];
+    const railEl = document.getElementById('reqRail');
+    railEl.innerHTML = '';
+    steps.forEach((step, i) => {
+      railEl.innerHTML += `
+        <div class="req-step ${step.status}" onclick="handleQuizRailClick(${i}, '${step.label}')">
+          <div class="req-step-dot"></div>
+          <div class="req-step-label">${step.label}</div>
+        </div>`;
+    });
+
+    const contentEl = document.getElementById('reqContent');
+    contentEl.innerHTML = `
+      <div style="max-width: 440px;">
+        <div style="width: 72px; height: 72px; border-radius: 50%; background: #ede9fe; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+          <span style="font-size: 32px; color: #635bff;">&#10003;</span>
+        </div>
+        <h1 style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">Stripe Verified</h1>
+        <p class="req-desc" style="font-size: 15px; line-height: 1.6;">Get verified to unlock instant payouts, stay ahead of compliance, and build trust with your customers.</p>
+        <button class="req-continue-btn" style="max-width: 340px; margin-top: 8px;" onclick="renderFullpageCardsChoose()">See plans</button>
+      </div>
+    `;
+  }
+
+  function renderFullpageCardsChoose() {
+    fullpageCardsSelection = 'plus';
+    const steps = [
+      { label: 'Learn about Verified', status: 'completed' },
+      { label: 'Choose your plan', status: 'active' },
+      { label: 'Business representative', status: 'pending' },
+      { label: 'Verify your identity', status: 'pending' },
+      { label: 'Business owners', status: 'pending' },
+      { label: 'Accept terms', status: 'pending' }
+    ];
+    const railEl = document.getElementById('reqRail');
+    railEl.innerHTML = '';
+    steps.forEach((step, i) => {
+      railEl.innerHTML += `
+        <div class="req-step ${step.status}" onclick="handleQuizRailClick(${i}, '${step.label}')">
+          <div class="req-step-dot"></div>
+          <div class="req-step-label">${step.label}</div>
+        </div>`;
+    });
+
+    const contentEl = document.getElementById('reqContent');
+    contentEl.innerHTML = `
+      <button class="req-content-back" onclick="renderFullpageCardsFlow()">&#8249; Back</button>
+      <h1>Choose your plan</h1>
+      <p class="req-desc">Select the plan that fits your business. Upgrade anytime.</p>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 520px; margin-bottom: 20px;">
+        <div class="split-plan-option" onclick="selectFullpageCard(this, 'essential')" style="padding: 18px;">
+          <div class="split-plan-option-top">
+            <div><div class="split-plan-option-name">Verified Essential</div><div class="split-plan-option-price">Free</div></div>
+            <div class="split-plan-radio"></div>
+          </div>
+          <ul class="split-plan-benefits" style="margin-top: 10px;">
+            <li><span class="chk">&#10003;</span> Access to Instant payouts</li>
+            <li><span class="chk">&#10003;</span> Stay ahead of compliance</li>
+          </ul>
+        </div>
+        <div class="split-plan-option selected" onclick="selectFullpageCard(this, 'plus')" style="padding: 18px;">
+          <div class="split-plan-option-top">
+            <div><div class="split-plan-option-name">Verified Plus</div><div class="split-plan-option-price">$99/month</div></div>
+            <div class="split-plan-radio"></div>
+          </div>
+          <ul class="split-plan-benefits" style="margin-top: 10px;">
+            <li><span class="chk">&#10003;</span> Higher limits on instant payouts</li>
+            <li><span class="chk">&#10003;</span> Risk & compliance experts</li>
+            <li><span class="chk">&#10003;</span> Verified Plus badge</li>
+            <li><span class="chk">&#10003;</span> Extended protections</li>
+          </ul>
+        </div>
+      </div>
+      <button class="req-continue-btn" style="max-width: 520px;" onclick="confirmFullpageCards()">Continue</button>
+    `;
+  }
+
+  function selectFullpageCard(el, plan) {
+    fullpageCardsSelection = plan;
+    el.parentElement.querySelectorAll('.split-plan-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function confirmFullpageCards() {
+    selectedPlan = fullpageCardsSelection;
+    currentScreen = 'requirements';
+    document.getElementById('deviceUrl').textContent = 'dashboard.stripe.com/verified/requirements';
+
+    const baseSteps = fullpageCardsSelection === 'plus'
+      ? ['Business representative', 'Verify your identity', 'Business owners', 'Link your bank account', 'Accept terms']
+      : ['Business representative', 'Verify your identity', 'Business owners', 'Accept terms'];
+
+    stepsData[fullpageCardsSelection] = baseSteps.map((label, i) => ({
+      label,
+      status: i === 0 ? 'active' : 'pending'
+    }));
+
+    stepsData[fullpageCardsSelection].unshift({ label: 'Learn about Verified', status: 'completed' });
+    stepsData[fullpageCardsSelection].splice(1, 0, { label: 'Choose your plan', status: 'completed' });
+
+    currentActiveStep = 2;
+    updateRequirementsUI(fullpageCardsSelection);
+    updateStateDisplay();
   }
 
   function renderCompareFlow() {
@@ -1466,8 +1557,11 @@
   }
 
   function handleQuizRailClick(index, label) {
-    if (label === 'Choose your plan') {
-      if (currentFlow === 'fullpage-quiz-priorities') renderQuizPriorities();
+    if (label === 'Learn about Verified') {
+      renderFullpageCardsFlow();
+    } else if (label === 'Choose your plan') {
+      if (currentFlow === 'fullpage-cards') renderFullpageCardsChoose();
+      else if (currentFlow === 'fullpage-quiz-priorities') renderQuizPriorities();
       else if (currentFlow === 'fullpage-quiz-persona') renderQuizPersona();
       else if (currentFlow === 'fullpage-compare') renderCompareFlow();
       else if (currentFlow === 'fullpage-illust-badge') renderIllustBadge();
