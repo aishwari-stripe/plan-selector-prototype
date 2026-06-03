@@ -1311,6 +1311,21 @@
     el.parentElement.querySelectorAll('.split-plan-option').forEach(o => o.classList.remove('selected'));
     el.classList.add('selected');
     document.getElementById('stackedIntroContinueBtn').disabled = false;
+
+    // Update rail to reflect plan-specific steps
+    const baseSteps = plan === 'plus'
+      ? ['Choose your plan', 'Business representative', 'Verify your identity', 'Business owners', 'Link your bank account', 'Accept terms']
+      : ['Choose your plan', 'Business representative', 'Verify your identity', 'Business owners', 'Accept terms'];
+    const railEl = document.getElementById('reqRail');
+    railEl.innerHTML = '';
+    baseSteps.forEach((label, i) => {
+      const status = i === 0 ? 'active' : 'pending';
+      railEl.innerHTML += `
+        <div class="req-step ${status}" onclick="handleQuizRailClick(${i}, '${label}')">
+          <div class="req-step-dot"></div>
+          <div class="req-step-label">${label}</div>
+        </div>`;
+    });
   }
 
   function confirmStackedIntro() {
