@@ -141,6 +141,12 @@
     .modal-shell-close { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 8px; border: none; background: #f6f8fa; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #697386; transition: all 0.15s; }
     .modal-shell-close:hover { background: #e3e8ee; }
 
+    /* Modal side-by-side wide (intro step) */
+    .modal-sbs-wide { max-width: 720px; padding: 0; overflow: hidden; }
+    .modal-sbs-split { display: flex; min-height: 360px; }
+    .modal-sbs-intro { flex: 1; padding: 36px 32px; display: flex; flex-direction: column; justify-content: center; }
+    .modal-sbs-illust { flex: 0.7; background: #f5f3ff; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+
     /* Modal side-by-side body */
     .modal-cards-body { padding: 24px 28px 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .m-plan-card { border: 1.5px solid #e3e8ee; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; cursor: pointer; transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
@@ -692,11 +698,35 @@
         </div>
       </div>
 
-      <!-- SCREEN: Modal — Side by side -->
+      <!-- SCREEN: Modal — Side by side (2-step) -->
       <div class="screen screen-plan-modal" id="screenModalSideBySide">
-        <div class="modal-shell">
+        <!-- Step 1: Intro -->
+        <div class="modal-shell modal-sbs-wide" id="modalSbsStep1">
+          <button class="modal-shell-close" onclick="resetFlow()">&times;</button>
+          <div class="modal-sbs-split">
+            <div class="modal-sbs-intro">
+              <div style="width: 52px; height: 52px; border-radius: 50%; background: #ede9fe; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+                <span style="font-size: 24px; color: #635bff;">&#10003;</span>
+              </div>
+              <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">Stripe Verified</h2>
+              <p style="font-size: 14px; color: #697386; line-height: 1.6; margin-bottom: 24px;">Get verified to unlock instant payouts, stay ahead of compliance, and build trust with your customers.</p>
+              <button class="req-continue-btn" style="max-width: 260px;" onclick="showModalSbsStep2()">Choose plan</button>
+            </div>
+            <div class="modal-sbs-illust">
+              <div style="text-align: center;">
+                <div class="illust-badge-shape filled" style="width: 100px; height: 116px;">
+                  <span class="badge-check" style="font-size: 30px;">&#10003;</span>
+                </div>
+                <div class="illust-badge-caption" style="margin-top: 14px;">Protection for your business</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Step 2: Plan cards -->
+        <div class="modal-shell" id="modalSbsStep2" style="display: none;">
           <button class="modal-shell-close" onclick="resetFlow()">&times;</button>
           <div class="modal-shell-header">
+            <button class="req-content-back" onclick="showModalSbsStep1()" style="margin-bottom: 12px;">&#8249; Back</button>
             <h2>Choose your plan</h2>
             <p>Select the verification tier that fits your needs.</p>
           </div>
@@ -713,7 +743,7 @@
             <div class="m-plan-card selectable selected" onclick="selectCardSideBySide(this, 'plus', 'modal')">
               <div class="m-plan-card-badge">Plus</div>
               <div class="m-plan-card-name">Verified Plus</div>
-              <div class="m-plan-card-price">$25/month</div>
+              <div class="m-plan-card-price">$99/month</div>
               <ul class="benefits">
                 <li><span class="chk">&#10003;</span> Higher limits on instant payouts</li>
                 <li><span class="chk">&#10003;</span> Stay ahead of compliance requirements</li>
@@ -935,6 +965,8 @@
       const screenId = flowScreenMap[currentFlow];
       document.getElementById(screenId).classList.add('active');
       document.getElementById('deviceUrl').textContent = 'dashboard.stripe.com/verified/plans';
+      // Reset modal side-by-side to step 1
+      if (currentFlow === 'modal-sidebyside') showModalSbsStep1();
     }
     updateStateDisplay();
   }
@@ -1751,6 +1783,16 @@
       <button class="req-continue-btn" onclick="selectPlanFromCompare('${plan}')">Continue with ${planName}</button>
       <button class="quiz-rec-switch" onclick="renderQuizRecommendation('${otherPlan}', '${flowType}')">Switch to ${otherName} instead</button>
     `;
+  }
+
+  function showModalSbsStep1() {
+    document.getElementById('modalSbsStep1').style.display = '';
+    document.getElementById('modalSbsStep2').style.display = 'none';
+  }
+
+  function showModalSbsStep2() {
+    document.getElementById('modalSbsStep1').style.display = 'none';
+    document.getElementById('modalSbsStep2').style.display = '';
   }
 
   let currentSideBySideSelection = 'plus';
