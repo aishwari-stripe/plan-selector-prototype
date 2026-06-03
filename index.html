@@ -1040,9 +1040,7 @@
       html += `<button class="req-content-back" onclick="goBackStep('${plan}')">&#8249; Back</button>`;
     }
 
-    if (activeLabel === 'Learn about Verified') {
-      renderFullpageCardsFlow(); return;
-    } else if (activeLabel === 'Choose your plan') {
+    if (activeLabel === 'Choose your plan') {
       // Re-show the correct plan selector for the active flow
       if (currentFlow === 'fullpage-cards') { renderFullpageCardsChoose(); return; }
       else if (currentFlow === 'fullpage-quiz-priorities') { renderQuizPriorities(); return; }
@@ -1160,8 +1158,7 @@
   function renderFullpageCardsFlow() {
     currentActiveStep = 0;
     const steps = [
-      { label: 'Learn about Verified', status: 'active' },
-      { label: 'Choose your plan', status: 'pending' },
+      { label: 'Choose your plan', status: 'active' },
       { label: 'Business representative', status: 'pending' },
       { label: 'Verify your identity', status: 'pending' },
       { label: 'Business owners', status: 'pending' },
@@ -1193,7 +1190,6 @@
   function renderFullpageCardsChoose() {
     fullpageCardsSelection = 'plus';
     const steps = [
-      { label: 'Learn about Verified', status: 'completed' },
       { label: 'Choose your plan', status: 'active' },
       { label: 'Business representative', status: 'pending' },
       { label: 'Verify your identity', status: 'pending' },
@@ -1263,10 +1259,9 @@
       status: i === 0 ? 'active' : 'pending'
     }));
 
-    stepsData[fullpageCardsSelection].unshift({ label: 'Learn about Verified', status: 'completed' });
-    stepsData[fullpageCardsSelection].splice(1, 0, { label: 'Choose your plan', status: 'completed' });
+    stepsData[fullpageCardsSelection].unshift({ label: 'Choose your plan', status: 'completed' });
 
-    currentActiveStep = 2;
+    currentActiveStep = 1;
     updateRequirementsUI(fullpageCardsSelection);
     updateStateDisplay();
   }
@@ -1592,9 +1587,7 @@
   }
 
   function handleQuizRailClick(index, label) {
-    if (label === 'Learn about Verified') {
-      renderFullpageCardsFlow();
-    } else if (label === 'Choose your plan') {
+    if (label === 'Choose your plan') {
       if (currentFlow === 'fullpage-cards') renderFullpageCardsChoose();
       else if (currentFlow === 'fullpage-quiz-priorities') renderQuizPriorities();
       else if (currentFlow === 'fullpage-quiz-persona') renderQuizPersona();
