@@ -1167,7 +1167,7 @@
   let fullpageCardsSelection = 'plus';
 
   function renderFullpageCardsFlow() {
-    fullpageCardsSelection = 'plus';
+    fullpageCardsSelection = null;
     currentActiveStep = 0;
     const steps = [
       { label: 'Choose your plan', status: 'active' },
@@ -1202,7 +1202,7 @@
               <li><span class="chk">&#10003;</span> Stay ahead of compliance</li>
             </ul>
           </div>
-          <div class="split-plan-option selected" onclick="selectFullpageCard(this, 'plus')" style="padding: 18px;">
+          <div class="split-plan-option" onclick="selectFullpageCard(this, 'plus')" style="padding: 18px;">
             <div class="split-plan-option-top">
               <div><div class="split-plan-option-name">Verified Plus</div><div class="split-plan-option-price">$99/month</div></div>
               <div class="split-plan-radio"></div>
@@ -1215,7 +1215,7 @@
             </ul>
           </div>
         </div>
-        <button class="req-continue-btn" style="max-width: 520px;" onclick="confirmFullpageCards()">Continue</button>
+        <button class="req-continue-btn" id="fullpageCardsContinueBtn" disabled style="max-width: 520px;" onclick="confirmFullpageCards()">Continue</button>
       </div>
     `;
   }
@@ -1226,9 +1226,11 @@
     el.parentElement.querySelectorAll('.split-plan-option').forEach(o => o.classList.remove('selected'));
     el.classList.add('selected');
     renderQuizRail(plan);
+    document.getElementById('fullpageCardsContinueBtn').disabled = false;
   }
 
   function confirmFullpageCards() {
+    if (!fullpageCardsSelection) return;
     selectedPlan = fullpageCardsSelection;
     currentScreen = 'requirements';
     document.getElementById('deviceUrl').textContent = 'dashboard.stripe.com/verified/requirements';
