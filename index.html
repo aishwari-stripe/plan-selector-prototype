@@ -1697,7 +1697,11 @@
     renderQuizRail(null);
     const contentEl = document.getElementById('reqContent');
     contentEl.innerHTML = `
-      <h1>What matters most to your business?</h1>
+      <div style="margin-bottom: 24px;">
+        <h1 style="font-size: 24px; font-weight: 700; margin-bottom: 8px; line-height: 1.3;">With Verified, get your funds in minutes and grow your business</h1>
+        <p class="req-desc" style="font-size: 14px; line-height: 1.6;">Verified businesses get access to Instant Payouts. Verification is free and takes about 2–3 minutes — you'll confirm your identity and a few details about your business.</p>
+      </div>
+      <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">What matters most to your business?</h2>
       <p class="req-desc">Select up to 3 priorities. We'll recommend the right plan for you.</p>
       <div class="quiz-tiles">
         <div class="quiz-tile" onclick="toggleQuizTile(this, 'funds')">
