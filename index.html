@@ -313,6 +313,10 @@
 
     .compare-row-footer { border-top: 1px solid #e3e8ee; border-bottom: none; }
     .compare-row-footer .compare-cell { padding: 18px; }
+    .compare-radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #d1d5db; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
+    .compare-radio:hover { border-color: #9ca3af; }
+    .compare-radio.selected { border-color: #635bff; }
+    .compare-radio.selected::after { content: ''; width: 10px; height: 10px; border-radius: 50%; background: #635bff; }
     .compare-dash { color: #c1c9d2; font-size: 16px; }
     .compare-note { font-size: 12px; color: #425466; font-weight: 500; }
 
@@ -1374,11 +1378,13 @@
             <div class="compare-cell compare-cell-label"><span style="color: #697386; font-size: 12px;">Plan benefits</span></div>
             <div class="compare-cell compare-cell-plan">
               <div class="compare-plan-tier">Verified Essential</div>
-              <div class="compare-plan-tagline">The basics, verified</div>
+              <div class="compare-plan-tagline">Get funds instantly</div>
+              <div style="font-size: 13px; color: #697386; margin-top: 2px;">Free</div>
             </div>
             <div class="compare-cell compare-cell-plan compare-cell-plus">
               <div class="compare-plan-tier plus">Verified Plus</div>
               <div class="compare-plan-tagline">Higher limits & expert support</div>
+              <div style="font-size: 13px; color: #697386; margin-top: 2px;">$99/month</div>
             </div>
           </div>
           <div class="compare-row">
@@ -1408,12 +1414,23 @@
           </div>
           <div class="compare-row compare-row-footer">
             <div class="compare-cell compare-cell-label"></div>
-            <div class="compare-cell compare-cell-value"><button class="compare-btn compare-btn-outline" onclick="selectPlanFromCompare('essential')">Get Essential</button></div>
-            <div class="compare-cell compare-cell-value compare-cell-plus"><button class="compare-btn compare-btn-primary" onclick="selectPlanFromCompare('plus')">Get Plus</button></div>
+            <div class="compare-cell compare-cell-value"><div class="compare-radio" onclick="selectCompareRadio('essential')"></div></div>
+            <div class="compare-cell compare-cell-value compare-cell-plus"><div class="compare-radio" onclick="selectCompareRadio('plus')"></div></div>
           </div>
         </div>
+        <button class="req-continue-btn" id="compareContinueBtn" disabled style="margin-top: 16px;" onclick="selectPlanFromCompare(compareRadioSelection)">Continue</button>
       </div>
     `;
+  }
+
+  let compareRadioSelection = null;
+
+  function selectCompareRadio(plan) {
+    compareRadioSelection = plan;
+    document.querySelectorAll('.compare-radio').forEach(r => r.classList.remove('selected'));
+    event.target.classList.add('selected');
+    document.getElementById('compareContinueBtn').disabled = false;
+    renderQuizRail(plan);
   }
 
   // ---- Illustration flows ----
