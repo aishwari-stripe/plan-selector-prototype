@@ -1225,6 +1225,7 @@
     fullpageCardsSelection = plan;
     el.parentElement.querySelectorAll('.split-plan-option').forEach(o => o.classList.remove('selected'));
     el.classList.add('selected');
+    renderQuizRail(plan);
   }
 
   function confirmFullpageCards() {
@@ -1804,6 +1805,7 @@
     document.querySelectorAll('.quiz-persona-card').forEach(c => c.classList.remove('selected'));
     el.classList.add('selected');
     document.getElementById('quizPersonaContinueBtn').disabled = false;
+    renderQuizRail(plan);
   }
 
   function submitQuizPersona() {
