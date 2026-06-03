@@ -142,10 +142,13 @@
     .modal-shell-close:hover { background: #e3e8ee; }
 
     /* Modal side-by-side wide (intro step) */
-    .modal-sbs-wide { max-width: 720px; padding: 0; overflow: hidden; }
-    .modal-sbs-split { display: flex; min-height: 360px; }
-    .modal-sbs-intro { flex: 1; padding: 36px 32px; display: flex; flex-direction: column; justify-content: center; }
-    .modal-sbs-illust { flex: 0.7; background: #f5f3ff; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+    .modal-sbs-wide { max-width: 780px; padding: 0; overflow: hidden; }
+    .modal-sbs-split { display: flex; min-height: 440px; }
+    .modal-sbs-intro { flex: 1; padding: 0; display: flex; flex-direction: column; }
+    .modal-sbs-intro-top { padding: 28px 32px 0; }
+    .modal-sbs-intro-body { flex: 1; padding: 0 32px; display: flex; flex-direction: column; justify-content: center; }
+    .modal-sbs-intro-bottom { padding: 0 32px 32px; }
+    .modal-sbs-illust { flex: 0.75; position: relative; overflow: hidden; border-radius: 0 16px 16px 0; }
 
     /* Modal side-by-side body */
     .modal-cards-body { padding: 24px 28px 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -702,23 +705,22 @@
       <div class="screen screen-plan-modal" id="screenModalSideBySide">
         <!-- Step 1: Intro -->
         <div class="modal-shell modal-sbs-wide" id="modalSbsStep1">
-          <button class="modal-shell-close" onclick="resetFlow()">&times;</button>
           <div class="modal-sbs-split">
             <div class="modal-sbs-intro">
-              <div style="width: 52px; height: 52px; border-radius: 50%; background: #ede9fe; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
-                <span style="font-size: 24px; color: #635bff;">&#10003;</span>
+              <div class="modal-sbs-intro-top">
+                <span style="font-size: 15px; font-weight: 600; color: #635bff;">Verified</span>
               </div>
-              <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">Stripe Verified</h2>
-              <p style="font-size: 14px; color: #697386; line-height: 1.6; margin-bottom: 24px;">Get verified to unlock instant payouts, stay ahead of compliance, and build trust with your customers.</p>
-              <button class="req-continue-btn" style="max-width: 260px;" onclick="showModalSbsStep2()">Choose plan</button>
+              <div class="modal-sbs-intro-body">
+                <h2 style="font-size: 26px; font-weight: 700; margin-bottom: 12px; line-height: 1.2;">Get your funds in minutes</h2>
+                <p style="font-size: 15px; color: #425466; line-height: 1.6;">Verified businesses get access to Instant Payouts. Verification is free and takes about 2–3 minutes — you'll confirm your identity and a few details about your business.</p>
+              </div>
+              <div class="modal-sbs-intro-bottom">
+                <button class="req-continue-btn" onclick="showModalSbsStep2()">Get Verified</button>
+              </div>
             </div>
             <div class="modal-sbs-illust">
-              <div style="text-align: center;">
-                <div class="illust-badge-shape filled" style="width: 100px; height: 116px;">
-                  <span class="badge-check" style="font-size: 30px;">&#10003;</span>
-                </div>
-                <div class="illust-badge-caption" style="margin-top: 14px;">Protection for your business</div>
-              </div>
+              <button class="modal-shell-close" onclick="resetFlow()" style="position: absolute; top: 12px; right: 12px; z-index: 2; background: rgba(255,255,255,0.2); color: #fff;">&times;</button>
+              <img src="verified-illust.jpg" alt="Verified illustration" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
           </div>
         </div>
