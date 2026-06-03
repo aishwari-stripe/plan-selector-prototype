@@ -257,11 +257,11 @@
     .split-plan-benefits .chk { color: #635bff; font-weight: 700; font-size: 13px; }
 
     /* Illustration split layout (inside req-content) */
-    .illust-split { display: flex; gap: 0; height: 100%; margin: -32px -48px; }
+    .illust-split { display: flex; gap: 0; position: absolute; inset: 0; }
     .illust-content { flex: 1; padding: 32px 32px; display: flex; flex-direction: column; justify-content: center; overflow-y: auto; }
     .illust-content h1 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
     .illust-content .req-desc { margin-bottom: 20px; }
-    .illust-right { flex: 0.9; background: #f5f3ff; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; border-left: 1px solid #ede9fe; }
+    .illust-right { flex: 1; background: #f5f3ff; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
 
     /* Badge illustration states */
     .illust-badge-shape { width: 120px; height: 140px; position: relative; display: flex; align-items: center; justify-content: center; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
@@ -342,7 +342,8 @@
     .req-step.active .req-step-label { color: #635bff; font-weight: 600; }
 
     /* Content area */
-    .req-content { flex: 1; padding: 32px 48px; max-width: 700px; animation: fadeInUp 0.35s ease; overflow-y: auto; }
+    .req-content { flex: 1; padding: 32px 48px; max-width: 700px; animation: fadeInUp 0.35s ease; overflow-y: auto; position: relative; }
+    .req-content:has(.illust-split) { max-width: none; padding: 0; overflow: hidden; }
     .req-content-back { display: flex; align-items: center; gap: 4px; font-size: 13px; color: #635bff; font-weight: 500; cursor: pointer; margin-bottom: 20px; border: none; background: none; transition: opacity 0.15s; }
     .req-content-back:hover { opacity: 0.7; }
     .req-content h1 { font-size: 24px; font-weight: 700; color: #1a1a2e; margin-bottom: 10px; }
