@@ -1042,7 +1042,7 @@
 
     if (activeLabel === 'Choose your plan') {
       // Re-show the correct plan selector for the active flow
-      if (currentFlow === 'fullpage-cards') { renderFullpageCardsChoose(); return; }
+      if (currentFlow === 'fullpage-cards') { renderFullpageCardsFlow(); return; }
       else if (currentFlow === 'fullpage-quiz-priorities') { renderQuizPriorities(); return; }
       else if (currentFlow === 'fullpage-quiz-persona') { renderQuizPersona(); return; }
       else if (currentFlow === 'fullpage-compare') { renderCompareFlow(); return; }
@@ -1156,6 +1156,7 @@
   let fullpageCardsSelection = 'plus';
 
   function renderFullpageCardsFlow() {
+    fullpageCardsSelection = 'plus';
     currentActiveStep = 0;
     const steps = [
       { label: 'Choose your plan', status: 'active' },
@@ -1176,68 +1177,38 @@
 
     const contentEl = document.getElementById('reqContent');
     contentEl.innerHTML = `
-      <div style="max-width: 440px;">
-        <div style="width: 72px; height: 72px; border-radius: 50%; background: #ede9fe; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
-          <span style="font-size: 32px; color: #635bff;">&#10003;</span>
+      <div style="max-width: 520px;">
+        <h1 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">Choose your plan</h1>
+        <p class="req-desc" style="font-size: 14px; line-height: 1.6; margin-bottom: 20px;">Get verified to unlock instant payouts, stay ahead of compliance, and build trust with your customers.</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+          <div class="split-plan-option" onclick="selectFullpageCard(this, 'essential')" style="padding: 18px;">
+            <div class="split-plan-option-top">
+              <div><div class="split-plan-option-name">Verified Essential</div><div class="split-plan-option-price">Free</div></div>
+              <div class="split-plan-radio"></div>
+            </div>
+            <ul class="split-plan-benefits" style="margin-top: 10px;">
+              <li><span class="chk">&#10003;</span> Access to Instant payouts</li>
+              <li><span class="chk">&#10003;</span> Stay ahead of compliance</li>
+            </ul>
+          </div>
+          <div class="split-plan-option selected" onclick="selectFullpageCard(this, 'plus')" style="padding: 18px;">
+            <div class="split-plan-option-top">
+              <div><div class="split-plan-option-name">Verified Plus</div><div class="split-plan-option-price">$99/month</div></div>
+              <div class="split-plan-radio"></div>
+            </div>
+            <ul class="split-plan-benefits" style="margin-top: 10px;">
+              <li><span class="chk">&#10003;</span> Higher limits on instant payouts</li>
+              <li><span class="chk">&#10003;</span> Risk & compliance experts</li>
+              <li><span class="chk">&#10003;</span> Verified Plus badge</li>
+              <li><span class="chk">&#10003;</span> Extended protections</li>
+            </ul>
+          </div>
         </div>
-        <h1 style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">Stripe Verified</h1>
-        <p class="req-desc" style="font-size: 15px; line-height: 1.6;">Get verified to unlock instant payouts, stay ahead of compliance, and build trust with your customers.</p>
-        <button class="req-continue-btn" style="max-width: 340px; margin-top: 8px;" onclick="renderFullpageCardsChoose()">See plans</button>
+        <button class="req-continue-btn" style="max-width: 520px;" onclick="confirmFullpageCards()">Continue</button>
       </div>
     `;
   }
 
-  function renderFullpageCardsChoose() {
-    fullpageCardsSelection = 'plus';
-    const steps = [
-      { label: 'Choose your plan', status: 'active' },
-      { label: 'Business representative', status: 'pending' },
-      { label: 'Verify your identity', status: 'pending' },
-      { label: 'Business owners', status: 'pending' },
-      { label: 'Accept terms', status: 'pending' }
-    ];
-    const railEl = document.getElementById('reqRail');
-    railEl.innerHTML = '';
-    steps.forEach((step, i) => {
-      railEl.innerHTML += `
-        <div class="req-step ${step.status}" onclick="handleQuizRailClick(${i}, '${step.label}')">
-          <div class="req-step-dot"></div>
-          <div class="req-step-label">${step.label}</div>
-        </div>`;
-    });
-
-    const contentEl = document.getElementById('reqContent');
-    contentEl.innerHTML = `
-      <button class="req-content-back" onclick="renderFullpageCardsFlow()">&#8249; Back</button>
-      <h1>Choose your plan</h1>
-      <p class="req-desc">Select the plan that fits your business. Upgrade anytime.</p>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 520px; margin-bottom: 20px;">
-        <div class="split-plan-option" onclick="selectFullpageCard(this, 'essential')" style="padding: 18px;">
-          <div class="split-plan-option-top">
-            <div><div class="split-plan-option-name">Verified Essential</div><div class="split-plan-option-price">Free</div></div>
-            <div class="split-plan-radio"></div>
-          </div>
-          <ul class="split-plan-benefits" style="margin-top: 10px;">
-            <li><span class="chk">&#10003;</span> Access to Instant payouts</li>
-            <li><span class="chk">&#10003;</span> Stay ahead of compliance</li>
-          </ul>
-        </div>
-        <div class="split-plan-option selected" onclick="selectFullpageCard(this, 'plus')" style="padding: 18px;">
-          <div class="split-plan-option-top">
-            <div><div class="split-plan-option-name">Verified Plus</div><div class="split-plan-option-price">$99/month</div></div>
-            <div class="split-plan-radio"></div>
-          </div>
-          <ul class="split-plan-benefits" style="margin-top: 10px;">
-            <li><span class="chk">&#10003;</span> Higher limits on instant payouts</li>
-            <li><span class="chk">&#10003;</span> Risk & compliance experts</li>
-            <li><span class="chk">&#10003;</span> Verified Plus badge</li>
-            <li><span class="chk">&#10003;</span> Extended protections</li>
-          </ul>
-        </div>
-      </div>
-      <button class="req-continue-btn" style="max-width: 520px;" onclick="confirmFullpageCards()">Continue</button>
-    `;
-  }
 
   function selectFullpageCard(el, plan) {
     fullpageCardsSelection = plan;
